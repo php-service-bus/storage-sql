@@ -1,5 +1,5 @@
 {
-  "name": "mmasiukevich/storage-sql",
+  "name": "php-service-bus/storage-sql",
   "description": "PHP Service Bus (publish-subscribe pattern) storage sql implementation",
   "type": "library",
   "keywords": ["cqrs", "event-sourcing", "async-php", "command-bus", "messaging"],
