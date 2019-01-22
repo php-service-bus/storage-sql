@@ -91,7 +91,7 @@ final class DoctrineDBALAdapterTest extends BaseStorageAdapterTest
     public function failedConnection(): void
     {
         $adapter = new DoctrineDBALAdapter(
-            StorageConfiguration::fromDSN('pgsql://localhost:4486/foo?charset=UTF-8')
+           new StorageConfiguration('pgsql://localhost:4486/foo?charset=UTF-8')
         );
 
         wait($adapter->execute('SELECT now()'));
@@ -108,7 +108,7 @@ final class DoctrineDBALAdapterTest extends BaseStorageAdapterTest
     public function failedConnectionString(): void
     {
         $adapter = new DoctrineDBALAdapter(
-            StorageConfiguration::fromDSN('')
+            new StorageConfiguration('')
         );
 
         wait($adapter->execute('SELECT now()'));

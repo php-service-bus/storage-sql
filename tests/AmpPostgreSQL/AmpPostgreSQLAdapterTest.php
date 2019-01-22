@@ -108,7 +108,7 @@ final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
     public function failedConnection(): void
     {
         $adapter = new AmpPostgreSQLAdapter(
-            StorageConfiguration::fromDSN('qwerty')
+           new StorageConfiguration('qwerty')
         );
 
         wait($adapter->execute('SELECT now()'));

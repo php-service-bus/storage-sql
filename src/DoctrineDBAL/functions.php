@@ -50,6 +50,6 @@ function adaptDbalThrowable(\Throwable $throwable): \Exception
 function inMemoryAdapter(): DoctrineDBALAdapter
 {
     return new DoctrineDBALAdapter(
-        StorageConfiguration::fromDSN('sqlite:///:memory:')
+        new StorageConfiguration('sqlite:///:memory:')
     );
 }

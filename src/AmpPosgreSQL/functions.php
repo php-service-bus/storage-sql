@@ -68,6 +68,6 @@ function adaptAmpThrowable(\Throwable $throwable): \Throwable
 function postgreSqlAdapterFactory(string $connectionDsn): AmpPostgreSQLAdapter
 {
     return new AmpPostgreSQLAdapter(
-        StorageConfiguration::fromDSN($connectionDsn)
+       new StorageConfiguration($connectionDsn)
     );
 }
