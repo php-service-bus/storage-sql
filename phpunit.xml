@@ -16,9 +16,13 @@
     </php>
 
     <testsuites>
-        <testsuite name="Service Bus storage sql implementation">
+
+        <testsuite name="Service Bus common storage parts">
+            <directory>./vendor/php-service-bus/storage-common/tests</directory>
+        </testsuite>
+
+        <testsuite name="Service Bus SQL storage implementation">
             <directory>./tests/</directory>
-            <directory>./examples/</directory>
         </testsuite>
     </testsuites>
 
@@ -27,6 +31,7 @@
             <directory>./</directory>
             <exclude>
                 <directory>./tests</directory>
+                <directory>./examples/</directory>
                 <directory>./vendor</directory>
             </exclude>
         </whitelist>

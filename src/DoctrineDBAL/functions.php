@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHP Service Bus (publish-subscribe pattern implementation) storage sql implementation
+ * PHP Service Bus SQL storage implementation
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
