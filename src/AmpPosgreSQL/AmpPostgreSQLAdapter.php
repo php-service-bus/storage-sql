@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHP Service Bus SQL storage implementation
+ * SQL databases adapters implementation
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -76,6 +76,8 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
     }
 
     /**
+     * @psalm-suppress MixedTypeCoercion
+     *
      * @inheritdoc
      */
     public function execute(string $queryString, array $parameters = []): Promise
@@ -92,6 +94,7 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
                 {
                     $logger->debug($queryString, $parameters);
 
+                    /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
                     return new AmpPostgreSQLResultSet(
                         yield $connectionsPool->execute($queryString, $parameters)
                     );
@@ -107,6 +110,8 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
     }
 
     /**
+     * @psalm-suppress MixedTypeCoercion
+     *
      * @inheritdoc
      */
     public function transaction(): Promise
@@ -122,7 +127,10 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
                 {
                     $logger->debug('BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED');
 
-                    /** @var \Amp\Postgres\Transaction $transaction */
+                    /**
+                     * @psalm-suppress TooManyTemplateParams Wrong Promise template
+                     * @var \Amp\Postgres\Transaction $transaction
+                     */
                     $transaction = yield $connectionsPool->beginTransaction();
 
                     return new AmpPostgreSQLTransaction($transaction, $logger);
@@ -147,10 +155,7 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
             $payload = \stream_get_contents($payload, -1, 0);
         }
 
-        /** @var string $payload */
-
-        /** @noinspection PhpComposerExtensionStubsInspection */
-        return \pg_unescape_bytea($payload);
+        return \pg_unescape_bytea((string)$payload);
     }
 
     /**

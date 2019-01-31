@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHP Service Bus SQL storage implementation
+ * SQL databases adapters implementation
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -43,6 +43,8 @@ class AmpPostgreSQLResultSet implements ResultSet
     }
 
     /**
+     * @psalm-suppress MixedTypeCoercion
+     *
      * @inheritdoc
      */
     public function advance(): Promise
@@ -51,6 +53,7 @@ class AmpPostgreSQLResultSet implements ResultSet
         {
             if($this->originalResultSet instanceof AmpResultSet)
             {
+                /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
                 return $this->originalResultSet->advance();
             }
 
@@ -71,7 +74,10 @@ class AmpPostgreSQLResultSet implements ResultSet
     {
         try
         {
-            return $this->originalResultSet->getCurrent();
+            /** @var array<string, string|int|null|float|resource>|null $data */
+            $data = $this->originalResultSet->getCurrent();
+
+            return $data;
         }
             // @codeCoverageIgnoreStart
         catch(\Throwable $throwable)

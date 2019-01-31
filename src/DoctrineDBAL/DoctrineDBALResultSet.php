@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHP Service Bus SQL storage implementation
+ * SQL databases adapters implementation
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -81,6 +81,8 @@ final class DoctrineDBALResultSet implements ResultSet
     }
 
     /**
+     * @psalm-suppress MixedTypeCoercion
+     *
      * @inheritdoc
      */
     public function advance(): Promise
@@ -102,10 +104,13 @@ final class DoctrineDBALResultSet implements ResultSet
     {
         if(null !== $this->currentRow)
         {
-            return $this->currentRow;
+            /** @var array<string, string|int|null|float|resource>|null $row */
+            $row = $this->currentRow;
+
+            return $row;
         }
 
-        /** @var array<array-key, string|int|float|resource|null>|null $data */
+        /** @var array<string, string|int|null|float|resource>|null $data */
         $data = $this->fetchResult[$this->currentPosition - 1] ?? null;
 
         if(true === \is_array($data) && 0 === \count($data))

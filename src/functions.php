@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHP Service Bus SQL storage implementation
+ * SQL databases adapters implementation
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -31,7 +31,7 @@ use ServiceBus\Storage\Common\ResultSet;
  * Collect iterator data
  * Not recommended for use on large amounts of data
  *
- * @noinspection PhpDocRedundantThrowsInspection
+ * @noinspection   PhpDocRedundantThrowsInspection
  * @psalm-suppress MixedTypeCoercion Incorrect resolving the value of the promise
  *
  * @param ResultSet $iterator
@@ -49,6 +49,7 @@ function fetchAll(ResultSet $iterator): Promise
         {
             $array = [];
 
+            /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
             while(yield $iterator->advance())
             {
                 $array[] = $iterator->getCurrent();
@@ -63,7 +64,7 @@ function fetchAll(ResultSet $iterator): Promise
 /**
  * Extract 1 result
  *
- * @noinspection PhpDocRedundantThrowsInspection
+ * @noinspection   PhpDocRedundantThrowsInspection
  * @psalm-suppress MixedTypeCoercion Incorrect resolving the value of the promise
  *
  * @param ResultSet $iterator
@@ -79,7 +80,10 @@ function fetchOne(ResultSet $iterator): Promise
     return call(
         static function(ResultSet $iterator): \Generator
         {
-            /** @var array $collection */
+            /**
+             * @psalm-suppress TooManyTemplateParams Wrong Promise template
+             * @var array $collection
+             */
             $collection   = yield fetchAll($iterator);
             $resultsCount = \count($collection);
 
@@ -285,7 +289,14 @@ function getObjectVars(object $object): array
  */
 function toSnakeCase(string $string): string
 {
-    return \strtolower(\preg_replace('/(?<!^)[A-Z]/', '_$0', $string));
+    $replaced = \preg_replace('/(?<!^)[A-Z]/', '_$0', $string);
+
+    if(true === \is_string($replaced))
+    {
+        return \strtolower($replaced);
+    }
+
+    return $string;
 }
 
 /**

@@ -1,8 +1,14 @@
 {
   "name": "php-service-bus/storage-sql",
-  "description": "PHP Service Bus SQL storage implementation",
+  "description": "SQL databases adapters implementation",
   "type": "library",
-  "keywords": ["cqrs", "event-sourcing", "async-php", "command-bus", "messaging"],
+  "keywords": [
+    "async-php",
+    "command-bus",
+    "messaging",
+    "postgresql",
+    "sql"
+  ],
   "authors": [
     {
       "name": "Masiukevich Maksim",
@@ -24,6 +30,7 @@
   },
   "autoload-dev": {
     "psr-4": {
+      "ServiceBus\\Storage\\Common\\Tests\\": "vendor/php-service-bus/storage-common/tests",
       "ServiceBus\\Storage\\Sql\\Tests\\": "tests/"
     },
     "files": [
@@ -43,7 +50,7 @@
   "require-dev": {
     "doctrine/dbal": "^v2.6",
     "phpunit/phpunit": "^7",
-    "vimeo/psalm": "^3"
+    "vimeo/psalm": "dev-master"
   },
   "prefer-stable": true,
   "minimum-stability": "dev",

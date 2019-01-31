@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHP Service Bus SQL storage implementation
+ * SQL databases adapters implementation
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -48,6 +48,8 @@ final class AmpPostgreSQLTransaction implements Transaction
     }
 
     /**
+     * @psalm-suppress MixedTypeCoercion
+     *
      * @inheritdoc
      */
     public function execute(string $queryString, array $parameters = []): Promise
@@ -64,6 +66,7 @@ final class AmpPostgreSQLTransaction implements Transaction
                 {
                     $logger->debug($queryString, $parameters);
 
+                    /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
                     return new AmpPostgreSQLResultSet(
                         yield $transaction->execute($queryString, $parameters)
                     );
@@ -96,6 +99,7 @@ final class AmpPostgreSQLTransaction implements Transaction
                 {
                     $logger->debug('COMMIT');
 
+                    /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
                     yield $transaction->commit();
 
                     $transaction->close();
@@ -126,6 +130,7 @@ final class AmpPostgreSQLTransaction implements Transaction
                 {
                     $logger->debug('ROLLBACK');
 
+                    /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
                     yield $transaction->rollback();
 
                     unset($transaction);
@@ -150,9 +155,6 @@ final class AmpPostgreSQLTransaction implements Transaction
             $payload = \stream_get_contents($payload, -1, 0);
         }
 
-        /** @var string $payload */
-
-        /** @noinspection PhpComposerExtensionStubsInspection */
-        return \pg_unescape_bytea($payload);
+        return \pg_unescape_bytea((string) $payload);
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHP Service Bus SQL storage implementation
+ * SQL databases adapters implementation
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -48,6 +48,8 @@ final class DoctrineDBALTransaction implements Transaction
     }
 
     /**
+     * @psalm-suppress MixedTypeCoercion
+     *
      * @inheritdoc
      */
     public function execute(string $queryString, array $parameters = []): Promise
@@ -144,9 +146,14 @@ final class DoctrineDBALTransaction implements Transaction
 
         if(true === \is_resource($payload))
         {
-            return \stream_get_contents($payload, -1, 0);
+            $result = \stream_get_contents($payload, -1, 0);
+
+            if(false !== $result)
+            {
+                return $result;
+            }
         }
 
-        return $payload;
+        return (string) $payload;
     }
 }

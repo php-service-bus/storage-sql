@@ -4,7 +4,7 @@
 
 ## What is it?
 
-Implementing PostgreSQL and SQLite for use in [service-bus](https://github.com/php-service-bus/service-bus) framework.
+Implementing PostgreSQL and SQLite adapters.
 
 #### [PostgreSQL](https://github.com/php-service-bus/storage-sql/blob/master/src/AmpPosgreSQL/AmpPostgreSQLAdapter.php)
 
