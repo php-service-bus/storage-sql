@@ -57,7 +57,7 @@ final class AmpPostgreSQLTransaction implements Transaction
         $transaction = $this->transaction;
         $logger      = $this->logger;
 
-        /** @psalm-suppress InvalidArgument Incorrect psalm unpack parameters (...$args) */
+        /** @psalm-suppress InvalidArgument */
         return call(
         /** @psalm-return AmpPostgreSQLResultSet */
             static function(string $queryString, array $parameters = []) use ($transaction, $logger): \Generator
@@ -91,7 +91,10 @@ final class AmpPostgreSQLTransaction implements Transaction
         $transaction = $this->transaction;
         $logger      = $this->logger;
 
-        /** @psalm-suppress InvalidArgument Incorrect psalm unpack parameters (...$args) */
+        /**
+         * @psalm-suppress InvalidArgument
+         * @psalm-suppress MixedTypeCoercion
+         */
         return call(
             static function() use ($transaction, $logger): \Generator
             {
@@ -122,7 +125,10 @@ final class AmpPostgreSQLTransaction implements Transaction
         $transaction = $this->transaction;
         $logger      = $this->logger;
 
-        /** @psalm-suppress InvalidArgument Incorrect psalm unpack parameters (...$args) */
+        /**
+         * @psalm-suppress InvalidArgument
+         * @psalm-suppress MixedTypeCoercion
+         */
         return call(
             static function() use ($transaction, $logger): \Generator
             {

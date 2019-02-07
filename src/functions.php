@@ -42,7 +42,7 @@ use ServiceBus\Storage\Common\ResultSet;
  */
 function fetchAll(ResultSet $iterator): Promise
 {
-    /** @psalm-suppress InvalidArgument Incorrect psalm unpack parameters (...$args) */
+    /** @psalm-suppress InvalidArgument */
     return call(
     /** @psalm-suppress InvalidReturnType Incorrect resolving the value of the generator */
         static function(ResultSet $iterator): \Generator
@@ -76,7 +76,7 @@ function fetchAll(ResultSet $iterator): Promise
  */
 function fetchOne(ResultSet $iterator): Promise
 {
-    /** @psalm-suppress InvalidArgument Incorrect psalm unpack parameters (...$args) */
+    /** @psalm-suppress InvalidArgument */
     return call(
         static function(ResultSet $iterator): \Generator
         {
@@ -91,8 +91,6 @@ function fetchOne(ResultSet $iterator): Promise
             {
                 /** @var bool|array $endElement */
                 $endElement = \end($collection);
-
-                unset($collection);
 
                 return false !== $endElement ? $endElement : null;
             }

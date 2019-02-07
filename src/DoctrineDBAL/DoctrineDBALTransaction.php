@@ -89,7 +89,10 @@ final class DoctrineDBALTransaction implements Transaction
         $connection = $this->connection;
         $logger     = $this->logger;
 
-        /** InvalidArgument Incorrect psalm unpack parameters (...$args) */
+        /**
+         * @psalm-suppress InvalidArgument
+         * @psalm-suppress MixedTypeCoercion
+         */
         return call(
             static function() use ($connection, $logger): void
             {
@@ -117,7 +120,10 @@ final class DoctrineDBALTransaction implements Transaction
         $connection = $this->connection;
         $logger     = $this->logger;
 
-        /** InvalidArgument Incorrect psalm unpack parameters (...$args) */
+        /**
+         * @psalm-suppress InvalidArgument
+         * @psalm-suppress MixedTypeCoercion
+         */
         return call(
             static function() use ($connection, $logger): void
             {

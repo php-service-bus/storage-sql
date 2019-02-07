@@ -43,12 +43,14 @@ function adaptDbalThrowable(\Throwable $throwable): \Exception
 }
 
 /**
+ * @noinspection PhpDocMissingThrowsInspection
  * @internal
  *
  * @return DoctrineDBALAdapter
  */
 function inMemoryAdapter(): DoctrineDBALAdapter
 {
+    /** @noinspection PhpUnhandledExceptionInspection */
     return new DoctrineDBALAdapter(
         new StorageConfiguration('sqlite:///:memory:')
     );

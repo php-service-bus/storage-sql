@@ -85,7 +85,7 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
         $connectionsPool = $this->pool();
         $logger          = $this->logger;
 
-        /** @psalm-suppress InvalidArgument Incorrect psalm unpack parameters (...$args) */
+        /** @psalm-suppress InvalidArgument */
         return call(
         /** @psalm-return AmpPostgreSQLResultSet */
             static function(string $queryString, array $parameters = []) use ($connectionsPool, $logger): \Generator
@@ -119,7 +119,7 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
         $connectionsPool = $this->pool();
         $logger          = $this->logger;
 
-        /** @psalm-suppress InvalidArgument Incorrect psalm unpack parameters (...$args) */
+        /** @psalm-suppress InvalidArgument  */
         return call(
             static function() use ($connectionsPool, $logger): \Generator
             {
