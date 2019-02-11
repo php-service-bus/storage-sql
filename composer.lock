@@ -326,16 +326,16 @@
         },
         {
             "name": "php-service-bus/storage-common",
-            "version": "v3.0.x-dev",
+            "version": "v3.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-service-bus/storage-common.git",
-                "reference": "276d1f37699b0cbf028b3077b0d8d4ba8b2d20a6"
+                "reference": "6ee58724072711bcb568d83831ce5bb95f677d2d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-service-bus/storage-common/zipball/276d1f37699b0cbf028b3077b0d8d4ba8b2d20a6",
-                "reference": "276d1f37699b0cbf028b3077b0d8d4ba8b2d20a6",
+                "url": "https://api.github.com/repos/php-service-bus/storage-common/zipball/6ee58724072711bcb568d83831ce5bb95f677d2d",
+                "reference": "6ee58724072711bcb568d83831ce5bb95f677d2d",
                 "shasum": ""
             },
             "require": {
@@ -370,7 +370,7 @@
                 "command-bus",
                 "messaging"
             ],
-            "time": "2019-02-07 11:21:00"
+            "time": "2019-02-11 14:16:18"
         },
         {
             "name": "psr/log",
@@ -1706,16 +1706,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "7.5.3",
+            "version": "7.5.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "2cb759721e53bc05f56487f628c6b9fbb6c18746"
+                "reference": "2896657da5fb237bc316bdfc18c2650efeee0dc0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/2cb759721e53bc05f56487f628c6b9fbb6c18746",
-                "reference": "2cb759721e53bc05f56487f628c6b9fbb6c18746",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/2896657da5fb237bc316bdfc18c2650efeee0dc0",
+                "reference": "2896657da5fb237bc316bdfc18c2650efeee0dc0",
                 "shasum": ""
             },
             "require": {
@@ -1786,7 +1786,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2019-02-01 05:24:07"
+            "time": "2019-02-07 14:15:04"
         },
         {
             "name": "sabre/event",

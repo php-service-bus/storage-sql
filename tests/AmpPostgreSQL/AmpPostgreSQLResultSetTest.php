@@ -197,6 +197,6 @@ final class AmpPostgreSQLResultSetTest extends TestCase
             static::fail('Non empty cycle');
         }
 
-        static::assertNull($result->lastInsertId());
+        static::assertNull(wait($result->lastInsertId()));
     }
 }

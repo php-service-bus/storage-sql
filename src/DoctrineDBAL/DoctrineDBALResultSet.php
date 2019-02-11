@@ -124,9 +124,9 @@ final class DoctrineDBALResultSet implements ResultSet
     /**
      * @inheritdoc
      */
-    public function lastInsertId(?string $sequence = null): ?string
+    public function lastInsertId(?string $sequence = null): Promise
     {
-        return $this->connection->lastInsertId($sequence);
+        return new Success($this->connection->lastInsertId($sequence));
     }
 
     /**

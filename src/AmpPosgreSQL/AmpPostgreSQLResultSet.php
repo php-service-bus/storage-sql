@@ -12,6 +12,7 @@ declare(strict_types = 1);
 
 namespace ServiceBus\Storage\Sql\AmpPosgreSQL;
 
+use function Amp\call;
 use Amp\Postgres\PgSqlCommandResult;
 use Amp\Postgres\PqCommandResult;
 use Amp\Promise;
@@ -32,6 +33,11 @@ class AmpPostgreSQLResultSet implements ResultSet
     private $originalResultSet;
 
     /**
+     * @var bool
+     */
+    private $advanceCalled = false;
+
+    /**
      * @noinspection   PhpDocSignatureInspection
      * @psalm-suppress TypeCoercion Assume a different data type
      *
@@ -49,6 +55,8 @@ class AmpPostgreSQLResultSet implements ResultSet
      */
     public function advance(): Promise
     {
+        $this->advanceCalled = true;
+
         try
         {
             if($this->originalResultSet instanceof AmpResultSet)
@@ -90,32 +98,45 @@ class AmpPostgreSQLResultSet implements ResultSet
     /**
      * @inheritdoc
      */
-    public function lastInsertId(?string $sequence = null): ?string
+    public function lastInsertId(?string $sequence = null): Promise
     {
-        try
-        {
-            if($this->originalResultSet instanceof PooledResultSet)
+        /** @psalm-suppress InvalidArgument */
+        return call(
+            function(): \Generator
             {
-                /** @var array<string, mixed> $result */
-                $result = $this->originalResultSet->getCurrent();
-
-                if(0 !== \count($result))
+                try
                 {
-                    /** @var bool|int|string $value */
-                    $value = \reset($result);
+                    if($this->originalResultSet instanceof PooledResultSet)
+                    {
+                        if(false === $this->advanceCalled)
+                        {
+                            yield $this->originalResultSet->advance();
 
-                    return false !== $value ? (string) $value : null;
+                            $this->advanceCalled = true;
+                        }
+
+                        /** @var array<string, mixed> $result */
+                        $result = $this->originalResultSet->getCurrent();
+
+                        if(0 !== \count($result))
+                        {
+                            /** @var bool|int|string $value */
+                            $value = \reset($result);
+
+                            return false !== $value ? (string) $value : null;
+                        }
+                    }
+
+                    return null;
                 }
+                    // @codeCoverageIgnoreStart
+                catch(\Throwable $throwable)
+                {
+                    throw new ResultSetIterationFailed($throwable->getMessage(), (int) $throwable->getCode(), $throwable);
+                }
+                // @codeCoverageIgnoreEnd
             }
-
-            return null;
-        }
-            // @codeCoverageIgnoreStart
-        catch(\Throwable $throwable)
-        {
-            throw new ResultSetIterationFailed($throwable->getMessage(), (int) $throwable->getCode(), $throwable);
-        }
-        // @codeCoverageIgnoreEnd
+        );
     }
 
     /**

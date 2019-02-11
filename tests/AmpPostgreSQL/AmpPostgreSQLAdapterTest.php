@@ -89,12 +89,12 @@ final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
         /** @var \ServiceBus\Storage\Common\ResultSet $result */
         $result = wait($adapter->execute('INSERT INTO test_ai (value) VALUES (\'qwerty\') RETURNING id'));
 
-        static::assertEquals('1', $result->lastInsertId());
+        static::assertEquals('1', wait($result->lastInsertId()));
 
         /** @var \ServiceBus\Storage\Common\ResultSet $result */
         $result = wait($adapter->execute('INSERT INTO test_ai (value) VALUES (\'qwerty\') RETURNING id'));
 
-        static::assertEquals('2', $result->lastInsertId());
+        static::assertEquals('2', wait($result->lastInsertId()));
     }
 
     /**
