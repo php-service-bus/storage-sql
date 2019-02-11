@@ -96,6 +96,8 @@ class AmpPostgreSQLResultSet implements ResultSet
     }
 
     /**
+     * @psalm-suppress MixedTypeCoercion
+     *
      * @inheritdoc
      */
     public function lastInsertId(?string $sequence = null): Promise
@@ -110,6 +112,7 @@ class AmpPostgreSQLResultSet implements ResultSet
                     {
                         if(false === $this->advanceCalled)
                         {
+                            /** @psalm-suppress TooManyTemplateParams Invalid Promise template */
                             yield $this->originalResultSet->advance();
 
                             $this->advanceCalled = true;

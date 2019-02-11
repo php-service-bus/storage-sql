@@ -122,6 +122,8 @@ final class DoctrineDBALResultSet implements ResultSet
     }
 
     /**
+     * @psalm-suppress MixedTypeCoercion
+     *
      * @inheritdoc
      */
     public function lastInsertId(?string $sequence = null): Promise
