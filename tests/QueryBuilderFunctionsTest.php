@@ -156,8 +156,6 @@ final class QueryBuilderFunctionsTest extends TestCase
 
     /**
      * @test
-     * @expectedException \LogicException
-     * @expectedExceptionMessage The "key" property must contain a scalar value. "array" given
      *
      * @return void
      *
@@ -165,14 +163,15 @@ final class QueryBuilderFunctionsTest extends TestCase
      */
     public function castNonScalarType(): void
     {
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('The "key" property must contain a scalar value. "array" given');
+
         /** @noinspection PhpParamsInspection */
         cast('key', []);
     }
 
     /**
      * @test
-     * @expectedException \LogicException
-     * @expectedExceptionMessage "Closure" must implements "__toString" method
      *
      * @return void
      *
@@ -180,6 +179,9 @@ final class QueryBuilderFunctionsTest extends TestCase
      */
     public function castObjectWithoutToString(): void
     {
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('"Closure" must implements "__toString" method');
+
         cast(
             'key',
             function()

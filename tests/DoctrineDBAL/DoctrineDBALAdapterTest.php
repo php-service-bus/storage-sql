@@ -14,6 +14,8 @@ namespace ServiceBus\Storage\Sql\Tests\DoctrineDBAL;
 
 use function Amp\Promise\wait;
 use ServiceBus\Storage\Common\DatabaseAdapter;
+use ServiceBus\Storage\Common\Exceptions\ConnectionFailed;
+use ServiceBus\Storage\Common\Exceptions\StorageInteractingFailed;
 use ServiceBus\Storage\Common\StorageConfiguration;
 use ServiceBus\Storage\Sql\DoctrineDBAL\DoctrineDBALAdapter;
 use function ServiceBus\Storage\Sql\DoctrineDBAL\inMemoryAdapter;
@@ -82,7 +84,6 @@ final class DoctrineDBALAdapterTest extends BaseStorageAdapterTest
 
     /**
      * @test
-     * @expectedException \ServiceBus\Storage\Common\Exceptions\ConnectionFailed
      *
      * @return void
      *
@@ -90,6 +91,8 @@ final class DoctrineDBALAdapterTest extends BaseStorageAdapterTest
      */
     public function failedConnection(): void
     {
+        $this->expectException(ConnectionFailed::class);
+
         $adapter = new DoctrineDBALAdapter(
            new StorageConfiguration('pgsql://localhost:4486/foo?charset=UTF-8')
         );
@@ -99,7 +102,6 @@ final class DoctrineDBALAdapterTest extends BaseStorageAdapterTest
 
     /**
      * @test
-     * @expectedException \ServiceBus\Storage\Common\Exceptions\StorageInteractingFailed
      *
      * @return void
      *
@@ -107,6 +109,8 @@ final class DoctrineDBALAdapterTest extends BaseStorageAdapterTest
      */
     public function failedConnectionString(): void
     {
+        $this->expectException(StorageInteractingFailed::class);
+
         $adapter = new DoctrineDBALAdapter(
             new StorageConfiguration('')
         );

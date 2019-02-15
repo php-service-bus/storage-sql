@@ -16,6 +16,9 @@ use Amp\Promise;
 use function Amp\Promise\wait;
 use PHPUnit\Framework\TestCase;
 use ServiceBus\Storage\Common\DatabaseAdapter;
+use ServiceBus\Storage\Common\Exceptions\OneResultExpected;
+use ServiceBus\Storage\Common\Exceptions\StorageInteractingFailed;
+use ServiceBus\Storage\Common\Exceptions\UniqueConstraintViolationCheckFailed;
 use function ServiceBus\Storage\Sql\fetchAll;
 use function ServiceBus\Storage\Sql\fetchOne;
 
@@ -136,7 +139,6 @@ abstract class BaseStorageAdapterTest extends TestCase
 
     /**
      * @test
-     * @expectedException \ServiceBus\Storage\Common\Exceptions\StorageInteractingFailed
      *
      * @return void
      *
@@ -144,6 +146,8 @@ abstract class BaseStorageAdapterTest extends TestCase
      */
     public function failedQuery(): void
     {
+        $this->expectException(StorageInteractingFailed::class);
+
         wait(static::getAdapter()->execute('SELECT abube from storage_test_table'));
     }
 
@@ -204,9 +208,6 @@ abstract class BaseStorageAdapterTest extends TestCase
 
     /**
      * @test
-     * @expectedException \ServiceBus\Storage\Common\Exceptions\OneResultExpected
-     * @expectedExceptionMessage A single record was requested, but the result of the query execution contains several
-     *                           ("2")
      *
      * @return void
      *
@@ -214,6 +215,9 @@ abstract class BaseStorageAdapterTest extends TestCase
      */
     public function findOneWhenWrongSet(): void
     {
+        $this->expectException(OneResultExpected::class);
+        $this->expectExceptionMessage('A single record was requested, but the result of the query execution contains several ("2")');
+
         $adapter = static::getAdapter();
 
         wait(self::importFixtures($adapter));
@@ -226,7 +230,6 @@ abstract class BaseStorageAdapterTest extends TestCase
 
     /**
      * @test
-     * @expectedException \ServiceBus\Storage\Common\Exceptions\UniqueConstraintViolationCheckFailed
      *
      * @return void
      *
@@ -234,6 +237,8 @@ abstract class BaseStorageAdapterTest extends TestCase
      */
     public function uniqueKeyCheckFailed(): void
     {
+        $this->expectException(UniqueConstraintViolationCheckFailed::class);
+
         $adapter = static::getAdapter();
 
         $promise = $adapter->execute(

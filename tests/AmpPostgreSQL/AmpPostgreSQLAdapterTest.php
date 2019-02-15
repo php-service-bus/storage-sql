@@ -14,6 +14,7 @@ namespace ServiceBus\Storage\Sql\Tests\AmpPostgreSQL;
 
 use function Amp\Promise\wait;
 use ServiceBus\Storage\Common\DatabaseAdapter;
+use ServiceBus\Storage\Common\Exceptions\ConnectionFailed;
 use ServiceBus\Storage\Common\StorageConfiguration;
 use ServiceBus\Storage\Sql\AmpPosgreSQL\AmpPostgreSQLAdapter;
 use function ServiceBus\Storage\Sql\AmpPosgreSQL\postgreSqlAdapterFactory;
@@ -99,7 +100,6 @@ final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
 
     /**
      * @test
-     * @expectedException \ServiceBus\Storage\Common\Exceptions\ConnectionFailed
      *
      * @return void
      *
@@ -107,6 +107,8 @@ final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
      */
     public function failedConnection(): void
     {
+        $this->expectException(ConnectionFailed::class);
+
         $adapter = new AmpPostgreSQLAdapter(
            new StorageConfiguration('qwerty')
         );
