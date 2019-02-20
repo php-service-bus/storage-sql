@@ -172,13 +172,17 @@ function selectQuery(string $fromTable, string ...$columns): SelectQuery
 /**
  * Create update query (for PostgreSQL)
  *
- * @param string $tableName
- * @param array  $values
+ * @param string                      $tableName
+ * @param array<string, mixed>|object $toUpdate
  *
  * @return UpdateQuery
+ *
+ * @throws \ServiceBus\Storage\Common\Exceptions\IncorrectParameterCast
  */
-function updateQuery(string $tableName, array $values): UpdateQuery
+function updateQuery(string $tableName, $toUpdate): UpdateQuery
 {
+    $values = true === \is_object($toUpdate) ? castObjectToArray($toUpdate) : $toUpdate;
+
     return queryBuilder()->update($tableName, $values);
 }
 
@@ -206,17 +210,7 @@ function deleteQuery(string $fromTable): DeleteQuery
  */
 function insertQuery(string $toTable, $toInsert): InsertQuery
 {
-    if(true === \is_object($toInsert))
-    {
-        /** @var object $toInsert */
-
-        $rows = castObjectToArray($toInsert);
-    }
-    else
-    {
-        /** @var array $rows */
-        $rows = $toInsert;
-    }
+    $rows = true === \is_object($toInsert) ? castObjectToArray($toInsert) : $toInsert;
 
     return queryBuilder()->insert($toTable, $rows);
 }
