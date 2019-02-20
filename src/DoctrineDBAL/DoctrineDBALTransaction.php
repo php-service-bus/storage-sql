@@ -86,21 +86,18 @@ final class DoctrineDBALTransaction implements Transaction
      */
     public function commit(): Promise
     {
-        $connection = $this->connection;
-        $logger     = $this->logger;
-
         /**
          * @psalm-suppress InvalidArgument
          * @psalm-suppress MixedTypeCoercion
          */
         return call(
-            static function() use ($connection, $logger): void
+            function(): void
             {
                 try
                 {
-                    $logger->debug('COMMIT');
+                    $this->logger->debug('COMMIT');
 
-                    $connection->commit();
+                    $this->connection->commit();
                 }
                     // @codeCoverageIgnoreStart
                 catch(\Throwable $throwable)
@@ -117,21 +114,18 @@ final class DoctrineDBALTransaction implements Transaction
      */
     public function rollback(): Promise
     {
-        $connection = $this->connection;
-        $logger     = $this->logger;
-
         /**
          * @psalm-suppress InvalidArgument
          * @psalm-suppress MixedTypeCoercion
          */
         return call(
-            static function() use ($connection, $logger): void
+            function(): void
             {
                 try
                 {
-                    $logger->debug('ROLLBACK');
+                    $this->logger->debug('ROLLBACK');
 
-                    $connection->rollBack();
+                    $this->connection->rollBack();
                 }
                     // @codeCoverageIgnoreStart
                 catch(\Throwable $throwable)

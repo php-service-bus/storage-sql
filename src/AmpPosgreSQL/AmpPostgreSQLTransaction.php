@@ -47,6 +47,14 @@ final class AmpPostgreSQLTransaction implements Transaction
         $this->logger      = $logger;
     }
 
+    public function __destruct()
+    {
+        if(true === $this->transaction->isAlive())
+        {
+            $this->transaction->close();
+        }
+    }
+
     /**
      * @psalm-suppress MixedTypeCoercion
      *
@@ -54,21 +62,18 @@ final class AmpPostgreSQLTransaction implements Transaction
      */
     public function execute(string $queryString, array $parameters = []): Promise
     {
-        $transaction = $this->transaction;
-        $logger      = $this->logger;
-
         /** @psalm-suppress InvalidArgument */
         return call(
         /** @psalm-return AmpPostgreSQLResultSet */
-            static function(string $queryString, array $parameters = []) use ($transaction, $logger): \Generator
+            function(string $queryString, array $parameters = []): \Generator
             {
                 try
                 {
-                    $logger->debug($queryString, $parameters);
+                    $this->logger->debug($queryString, $parameters);
 
                     /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
                     return new AmpPostgreSQLResultSet(
-                        yield $transaction->execute($queryString, $parameters)
+                        yield $this->transaction->execute($queryString, $parameters)
                     );
                 }
                     // @codeCoverageIgnoreStart
@@ -88,24 +93,21 @@ final class AmpPostgreSQLTransaction implements Transaction
      */
     public function commit(): Promise
     {
-        $transaction = $this->transaction;
-        $logger      = $this->logger;
-
         /**
          * @psalm-suppress InvalidArgument
          * @psalm-suppress MixedTypeCoercion
          */
         return call(
-            static function() use ($transaction, $logger): \Generator
+            function(): \Generator
             {
                 try
                 {
-                    $logger->debug('COMMIT');
+                    $this->logger->debug('COMMIT');
 
                     /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
-                    yield $transaction->commit();
+                    yield $this->transaction->commit();
 
-                    $transaction->close();
+                    $this->transaction->close();
                 }
                     // @codeCoverageIgnoreStart
                 catch(\Throwable $throwable)
@@ -122,24 +124,19 @@ final class AmpPostgreSQLTransaction implements Transaction
      */
     public function rollback(): Promise
     {
-        $transaction = $this->transaction;
-        $logger      = $this->logger;
-
         /**
          * @psalm-suppress InvalidArgument
          * @psalm-suppress MixedTypeCoercion
          */
         return call(
-            static function() use ($transaction, $logger): \Generator
+            function(): \Generator
             {
                 try
                 {
-                    $logger->debug('ROLLBACK');
+                    $this->logger->debug('ROLLBACK');
 
                     /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
-                    yield $transaction->rollback();
-
-                    unset($transaction);
+                    yield $this->transaction->rollback();
                 }
                     // @codeCoverageIgnoreStart
                 catch(\Throwable $throwable)

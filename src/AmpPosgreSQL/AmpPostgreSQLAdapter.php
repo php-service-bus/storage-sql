@@ -82,21 +82,18 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
      */
     public function execute(string $queryString, array $parameters = []): Promise
     {
-        $connectionsPool = $this->pool();
-        $logger          = $this->logger;
-
         /** @psalm-suppress InvalidArgument */
         return call(
         /** @psalm-return AmpPostgreSQLResultSet */
-            static function(string $queryString, array $parameters = []) use ($connectionsPool, $logger): \Generator
+            function(string $queryString, array $parameters = []): \Generator
             {
                 try
                 {
-                    $logger->debug($queryString, $parameters);
+                    $this->logger->debug($queryString, $parameters);
 
                     /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
                     return new AmpPostgreSQLResultSet(
-                        yield $connectionsPool->execute($queryString, $parameters)
+                        yield $this->pool()->execute($queryString, $parameters)
                     );
                 }
                 catch(\Throwable $throwable)
@@ -116,24 +113,21 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
      */
     public function transaction(): Promise
     {
-        $connectionsPool = $this->pool();
-        $logger          = $this->logger;
-
         /** @psalm-suppress InvalidArgument  */
         return call(
-            static function() use ($connectionsPool, $logger): \Generator
+            function(): \Generator
             {
                 try
                 {
-                    $logger->debug('BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED');
+                    $this->logger->debug('BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED');
 
                     /**
                      * @psalm-suppress TooManyTemplateParams Wrong Promise template
                      * @var \Amp\Postgres\Transaction $transaction
                      */
-                    $transaction = yield $connectionsPool->beginTransaction();
+                    $transaction = yield $this->pool()->beginTransaction();
 
-                    return new AmpPostgreSQLTransaction($transaction, $logger);
+                    return new AmpPostgreSQLTransaction($transaction, $this->logger);
                 }
                     // @codeCoverageIgnoreStart
                 catch(\Throwable $throwable)
