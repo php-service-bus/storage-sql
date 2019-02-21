@@ -3,9 +3,7 @@
 [![Code Coverage](https://scrutinizer-ci.com/g/php-service-bus/storage-sql/badges/coverage.png?b=v3.0)](https://scrutinizer-ci.com/g/php-service-bus/storage-sql/?branch=v3.0)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/php-service-bus/storage-sql/badges/quality-score.png?b=v3.0)](https://scrutinizer-ci.com/g/php-service-bus/storage-sql/?branch=v3.0)
 
-This component is part of the [PHP Service Bus](https://github.com/php-service-bus/service-bus)
-
-Implementing PostgreSQL and SQLite adapters.
+This component is part of the [PHP Service Bus](https://github.com/php-service-bus/service-bus). Implementing PostgreSQL and SQLite adapters.
 
 #### [PostgreSQL](https://github.com/php-service-bus/storage-sql/blob/v3.0/src/AmpPosgreSQL/AmpPostgreSQLAdapter.php)
 
