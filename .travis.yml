@@ -18,6 +18,7 @@ services:
 cache:
   directories:
     - $HOME/.cache/composer
+    - $HOME/.php-cs-fixer
 
 before_script:
   - mkdir -p build/logs
