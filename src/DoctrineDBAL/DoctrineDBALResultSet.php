@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SQL databases adapters implementation
+ * SQL databases adapters implementation.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -24,42 +24,46 @@ use ServiceBus\Storage\Common\ResultSet;
 final class DoctrineDBALResultSet implements ResultSet
 {
     /**
-     * Last row emitted
+     * Last row emitted.
      *
-     * @var array<array-key, string|int|float|resource|null>|null
+     * @psalm-var array<array-key, string|int|float|resource|null>|null
+     *
+     * @var array
      */
     private $currentRow;
 
     /**
-     * Pdo fetch result
+     * Pdo fetch result.
      *
-     * @var array<array-key, array<string, string|int|float|resource|null>|null
+     * @psalm-var array<array-key, array<string, string|int|float|resource|null>|null
+     *
+     * @var array
      */
     private $fetchResult;
 
     /**
-     * Results count
+     * Results count.
      *
      * @var int
      */
     private $resultsCount;
 
     /**
-     * Current iterator position
+     * Current iterator position.
      *
      * @var int
      */
     private $currentPosition = 0;
 
     /**
-     * Connection instance
+     * Connection instance.
      *
      * @var Connection
      */
     private $connection;
 
     /**
-     * Number of rows affected by the last DELETE, INSERT, or UPDATE statement
+     * Number of rows affected by the last DELETE, INSERT, or UPDATE statement.
      *
      * @var int
      */
@@ -71,7 +75,7 @@ final class DoctrineDBALResultSet implements ResultSet
      */
     public function __construct(Connection $connection, Statement $wrappedStmt)
     {
-        /** @var array<array-key, array<string, string|int|float|resource|null>|null> $rows */
+        /** @psalm-var array<array-key, array<string, string|int|float|resource|null>|null> $rows */
         $rows = $wrappedStmt->fetchAll();
 
         $this->connection   = $connection;
@@ -83,13 +87,13 @@ final class DoctrineDBALResultSet implements ResultSet
     /**
      * @psalm-suppress MixedTypeCoercion
      *
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function advance(): Promise
     {
         $this->currentRow = null;
 
-        if(++$this->currentPosition > $this->resultsCount)
+        if (++$this->currentPosition > $this->resultsCount)
         {
             return new Success(false);
         }
@@ -98,22 +102,30 @@ final class DoctrineDBALResultSet implements ResultSet
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getCurrent(): ?array
     {
-        if(null !== $this->currentRow)
+        if (null !== $this->currentRow)
         {
-            /** @var array<string, string|int|null|float|resource>|null $row */
+            /**
+             * @psalm-var array<string, float|int|resource|string|null>|null $row
+             *
+             * @var array $row
+             */
             $row = $this->currentRow;
 
             return $row;
         }
 
-        /** @var array<string, string|int|null|float|resource>|null $data */
+        /**
+         * @psalm-var array<string, float|int|resource|string|null>|null $data
+         *
+         * @var array $row
+         */
         $data = $this->fetchResult[$this->currentPosition - 1] ?? null;
 
-        if(true === \is_array($data) && 0 === \count($data))
+        if (true === \is_array($data) && 0 === \count($data))
         {
             $data = null;
         }
@@ -124,7 +136,7 @@ final class DoctrineDBALResultSet implements ResultSet
     /**
      * @psalm-suppress MixedTypeCoercion
      *
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function lastInsertId(?string $sequence = null): Promise
     {
@@ -132,7 +144,7 @@ final class DoctrineDBALResultSet implements ResultSet
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function affectedRows(): int
     {

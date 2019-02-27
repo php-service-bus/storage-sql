@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SQL databases adapters implementation
+ * SQL databases adapters implementation.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -14,11 +14,11 @@ namespace ServiceBus\Storage\Sql\AmpPosgreSQL;
 
 use function Amp\call;
 use Amp\Postgres\PgSqlCommandResult;
+use Amp\Postgres\PooledResultSet;
 use Amp\Postgres\PqCommandResult;
 use Amp\Promise;
-use Amp\Success;
 use Amp\Sql\ResultSet as AmpResultSet;
-use Amp\Postgres\PooledResultSet;
+use Amp\Success;
 use ServiceBus\Storage\Common\Exceptions\ResultSetIterationFailed;
 use ServiceBus\Storage\Common\ResultSet;
 
@@ -39,6 +39,7 @@ class AmpPostgreSQLResultSet implements ResultSet
 
     /**
      * @noinspection   PhpDocSignatureInspection
+     *
      * @psalm-suppress TypeCoercion Assume a different data type
      *
      * @param AmpResultSet|PooledResultSet $originalResultSet
@@ -51,7 +52,7 @@ class AmpPostgreSQLResultSet implements ResultSet
     /**
      * @psalm-suppress MixedTypeCoercion
      *
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function advance(): Promise
     {
@@ -59,7 +60,7 @@ class AmpPostgreSQLResultSet implements ResultSet
 
         try
         {
-            if($this->originalResultSet instanceof AmpResultSet)
+            if ($this->originalResultSet instanceof AmpResultSet)
             {
                 /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
                 return $this->originalResultSet->advance();
@@ -67,8 +68,8 @@ class AmpPostgreSQLResultSet implements ResultSet
 
             return new Success(false);
         }
-            // @codeCoverageIgnoreStart
-        catch(\Throwable $throwable)
+        // @codeCoverageIgnoreStart
+        catch (\Throwable $throwable)
         {
             throw new ResultSetIterationFailed($throwable->getMessage(), (int) $throwable->getCode(), $throwable);
         }
@@ -76,19 +77,19 @@ class AmpPostgreSQLResultSet implements ResultSet
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getCurrent(): ?array
     {
         try
         {
-            /** @var array<string, string|int|null|float|resource>|null $data */
+            /** @var array<string, float|int|resource|string|null>|null $data */
             $data = $this->originalResultSet->getCurrent();
 
             return $data;
         }
-            // @codeCoverageIgnoreStart
-        catch(\Throwable $throwable)
+        // @codeCoverageIgnoreStart
+        catch (\Throwable $throwable)
         {
             throw new ResultSetIterationFailed($throwable->getMessage(), (int) $throwable->getCode(), $throwable);
         }
@@ -98,7 +99,7 @@ class AmpPostgreSQLResultSet implements ResultSet
     /**
      * @psalm-suppress MixedTypeCoercion
      *
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function lastInsertId(?string $sequence = null): Promise
     {
@@ -108,9 +109,9 @@ class AmpPostgreSQLResultSet implements ResultSet
             {
                 try
                 {
-                    if($this->originalResultSet instanceof PooledResultSet)
+                    if ($this->originalResultSet instanceof PooledResultSet)
                     {
-                        if(false === $this->advanceCalled)
+                        if (false === $this->advanceCalled)
                         {
                             /** @psalm-suppress TooManyTemplateParams Invalid Promise template */
                             yield $this->originalResultSet->advance();
@@ -121,7 +122,7 @@ class AmpPostgreSQLResultSet implements ResultSet
                         /** @var array<string, mixed> $result */
                         $result = $this->originalResultSet->getCurrent();
 
-                        if(0 !== \count($result))
+                        if (0 !== \count($result))
                         {
                             /** @var bool|int|string $value */
                             $value = \reset($result);
@@ -132,8 +133,8 @@ class AmpPostgreSQLResultSet implements ResultSet
 
                     return null;
                 }
-                    // @codeCoverageIgnoreStart
-                catch(\Throwable $throwable)
+                // @codeCoverageIgnoreStart
+                catch (\Throwable $throwable)
                 {
                     throw new ResultSetIterationFailed($throwable->getMessage(), (int) $throwable->getCode(), $throwable);
                 }
@@ -143,24 +144,23 @@ class AmpPostgreSQLResultSet implements ResultSet
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function affectedRows(): int
     {
         try
         {
-            if(
+            if (
                 $this->originalResultSet instanceof PgSqlCommandResult ||
                 $this->originalResultSet instanceof PqCommandResult
-            )
-            {
+            ) {
                 return $this->originalResultSet->getAffectedRowCount();
             }
 
             return 0;
         }
-            // @codeCoverageIgnoreStart
-        catch(\Throwable $throwable)
+        // @codeCoverageIgnoreStart
+        catch (\Throwable $throwable)
         {
             throw new ResultSetIterationFailed($throwable->getMessage(), (int) $throwable->getCode(), $throwable);
         }

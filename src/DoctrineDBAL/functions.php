@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SQL databases adapters implementation
+ * SQL databases adapters implementation.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -17,24 +17,24 @@ use ServiceBus\Storage\Common\Exceptions as InternalExceptions;
 use ServiceBus\Storage\Common\StorageConfiguration;
 
 /**
- * Convert Doctrine DBAL exceptions
+ * Convert Doctrine DBAL exceptions.
  *
  * @internal
  *
  * @param \Throwable $throwable
  *
- * @return InternalExceptions\ConnectionFailed|InternalExceptions\UniqueConstraintViolationCheckFailed|InternalExceptions\StorageInteractingFailed
+ * @return InternalExceptions\ConnectionFailed|InternalExceptions\StorageInteractingFailed|InternalExceptions\UniqueConstraintViolationCheckFailed
  */
 function adaptDbalThrowable(\Throwable $throwable): \Exception
 {
     $message = \str_replace(\PHP_EOL, '', $throwable->getMessage());
 
-    if($throwable instanceof DoctrineDBALExceptions\ConnectionException)
+    if ($throwable instanceof DoctrineDBALExceptions\ConnectionException)
     {
         return new InternalExceptions\ConnectionFailed($message, (int) $throwable->getCode(), $throwable);
     }
 
-    if($throwable instanceof DoctrineDBALExceptions\UniqueConstraintViolationException)
+    if ($throwable instanceof DoctrineDBALExceptions\UniqueConstraintViolationException)
     {
         return new InternalExceptions\UniqueConstraintViolationCheckFailed($message, (int) $throwable->getCode(), $throwable);
     }
@@ -44,6 +44,7 @@ function adaptDbalThrowable(\Throwable $throwable): \Exception
 
 /**
  * @noinspection PhpDocMissingThrowsInspection
+ *
  * @internal
  *
  * @return DoctrineDBALAdapter

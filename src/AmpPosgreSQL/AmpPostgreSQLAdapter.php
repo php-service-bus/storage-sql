@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SQL databases adapters implementation
+ * SQL databases adapters implementation.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -13,9 +13,9 @@ declare(strict_types = 1);
 namespace ServiceBus\Storage\Sql\AmpPosgreSQL;
 
 use function Amp\call;
+use function Amp\Postgres\pool;
 use Amp\Postgres\ConnectionConfig;
 use Amp\Postgres\Pool;
-use function Amp\Postgres\pool;
 use Amp\Promise;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -29,14 +29,14 @@ use ServiceBus\Storage\Common\StorageConfiguration;
 final class AmpPostgreSQLAdapter implements DatabaseAdapter
 {
     /**
-     * Connection parameters
+     * Connection parameters.
      *
      * @var StorageConfiguration
      */
     private $configuration;
 
     /**
-     * Connections pool
+     * Connections pool.
      *
      * @var Pool|null
      */
@@ -56,7 +56,7 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
     public function __construct(StorageConfiguration $configuration, ?LoggerInterface $logger = null)
     {
         // @codeCoverageIgnoreStart
-        if(false === \extension_loaded('pgsql'))
+        if (false === \extension_loaded('pgsql'))
         {
             throw new InvalidConfigurationOptions('ext-pgsql must be installed');
         }
@@ -69,7 +69,7 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
     public function __destruct()
     {
         /** @psalm-suppress RedundantConditionGivenDocblockType Null in case of error */
-        if(null !== $this->pool)
+        if (null !== $this->pool)
         {
             $this->pool->close();
         }
@@ -78,7 +78,7 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
     /**
      * @psalm-suppress MixedTypeCoercion
      *
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function execute(string $queryString, array $parameters = []): Promise
     {
@@ -96,7 +96,7 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
                         yield $this->pool()->execute($queryString, $parameters)
                     );
                 }
-                catch(\Throwable $throwable)
+                catch (\Throwable $throwable)
                 {
                     throw adaptAmpThrowable($throwable);
                 }
@@ -109,7 +109,7 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
     /**
      * @psalm-suppress MixedTypeCoercion
      *
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function transaction(): Promise
     {
@@ -123,14 +123,15 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
 
                     /**
                      * @psalm-suppress TooManyTemplateParams Wrong Promise template
+                     *
                      * @var \Amp\Postgres\Transaction $transaction
                      */
                     $transaction = yield $this->pool()->beginTransaction();
 
                     return new AmpPostgreSQLTransaction($transaction, $this->logger);
                 }
-                    // @codeCoverageIgnoreStart
-                catch(\Throwable $throwable)
+                // @codeCoverageIgnoreStart
+                catch (\Throwable $throwable)
                 {
                     throw adaptAmpThrowable($throwable);
                 }
@@ -140,26 +141,26 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function unescapeBinary($payload): string
     {
-        if(true === \is_resource($payload))
+        if (true === \is_resource($payload))
         {
             $payload = \stream_get_contents($payload, -1, 0);
         }
 
-        return \pg_unescape_bytea((string)$payload);
+        return \pg_unescape_bytea((string) $payload);
     }
 
     /**
-     * Receive connection pool
+     * Receive connection pool.
      *
      * @return Pool
      */
     private function pool(): Pool
     {
-        if(null === $this->pool)
+        if (null === $this->pool)
         {
             $queryData = $this->configuration->queryParameters;
 

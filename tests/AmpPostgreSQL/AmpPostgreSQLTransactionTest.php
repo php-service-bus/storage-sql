@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SQL databases adapters implementation
+ * SQL databases adapters implementation.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -13,9 +13,9 @@ declare(strict_types = 1);
 namespace ServiceBus\Storage\Sql\Tests\AmpPostgreSQL;
 
 use function Amp\Promise\wait;
+use function ServiceBus\Storage\Sql\AmpPosgreSQL\postgreSqlAdapterFactory;
 use ServiceBus\Storage\Common\DatabaseAdapter;
 use ServiceBus\Storage\Sql\AmpPosgreSQL\AmpPostgreSQLAdapter;
-use function ServiceBus\Storage\Sql\AmpPosgreSQL\postgreSqlAdapterFactory;
 use ServiceBus\Storage\Sql\Tests\BaseTransactionTest;
 
 /**
@@ -29,7 +29,7 @@ final class AmpPostgreSQLTransactionTest extends BaseTransactionTest
     private static $adapter;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      *
      * @throws \Throwable
      */
@@ -47,7 +47,7 @@ final class AmpPostgreSQLTransactionTest extends BaseTransactionTest
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      *
      * @throws \Throwable
      */
@@ -63,13 +63,14 @@ final class AmpPostgreSQLTransactionTest extends BaseTransactionTest
     }
 
     /**
+     * @throws \Throwable
+     *
      * @return DatabaseAdapter
      *
-     * @throws \Throwable
      */
     protected static function getAdapter(): DatabaseAdapter
     {
-        if(null === self::$adapter)
+        if (null === self::$adapter)
         {
             self::$adapter = postgreSqlAdapterFactory((string) \getenv('TEST_POSTGRES_DSN'));
         }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SQL databases adapters implementation
+ * SQL databases adapters implementation.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -13,11 +13,11 @@ declare(strict_types = 1);
 namespace ServiceBus\Storage\Sql\Tests\AmpPostgreSQL;
 
 use function Amp\Promise\wait;
+use function ServiceBus\Storage\Sql\AmpPosgreSQL\postgreSqlAdapterFactory;
 use ServiceBus\Storage\Common\DatabaseAdapter;
 use ServiceBus\Storage\Common\Exceptions\ConnectionFailed;
 use ServiceBus\Storage\Common\StorageConfiguration;
 use ServiceBus\Storage\Sql\AmpPosgreSQL\AmpPostgreSQLAdapter;
-use function ServiceBus\Storage\Sql\AmpPosgreSQL\postgreSqlAdapterFactory;
 use ServiceBus\Storage\Sql\Tests\BaseStorageAdapterTest;
 
 /**
@@ -31,9 +31,10 @@ final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
     private static $adapter;
 
     /**
+     * @throws \Throwable
+     *
      * @return void
      *
-     * @throws \Throwable
      */
     public static function setUpBeforeClass(): void
     {
@@ -47,9 +48,10 @@ final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
     }
 
     /**
+     * @throws \Throwable
+     *
      * @return void
      *
-     * @throws \Throwable
      */
     public static function tearDownAfterClass(): void
     {
@@ -62,13 +64,13 @@ final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      *
      * @throws \Throwable
      */
     protected static function getAdapter(): DatabaseAdapter
     {
-        if(null === self::$adapter)
+        if (null === self::$adapter)
         {
             self::$adapter = postgreSqlAdapterFactory((string) \getenv('TEST_POSTGRES_DSN'));
         }
@@ -79,9 +81,10 @@ final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
     /**
      * @test
      *
+     * @throws \Throwable
+     *
      * @return void
      *
-     * @throws \Throwable
      */
     public function lastInsertId(): void
     {
@@ -90,27 +93,28 @@ final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
         /** @var \ServiceBus\Storage\Common\ResultSet $result */
         $result = wait($adapter->execute('INSERT INTO test_ai (value) VALUES (\'qwerty\') RETURNING id'));
 
-        static::assertEquals('1', wait($result->lastInsertId()));
+        static::assertSame('1', wait($result->lastInsertId()));
 
         /** @var \ServiceBus\Storage\Common\ResultSet $result */
         $result = wait($adapter->execute('INSERT INTO test_ai (value) VALUES (\'qwerty\') RETURNING id'));
 
-        static::assertEquals('2', wait($result->lastInsertId()));
+        static::assertSame('2', wait($result->lastInsertId()));
     }
 
     /**
      * @test
      *
+     * @throws \Throwable
+     *
      * @return void
      *
-     * @throws \Throwable
      */
     public function failedConnection(): void
     {
         $this->expectException(ConnectionFailed::class);
 
         $adapter = new AmpPostgreSQLAdapter(
-           new StorageConfiguration('qwerty')
+            new StorageConfiguration('qwerty')
         );
 
         wait($adapter->execute('SELECT now()'));

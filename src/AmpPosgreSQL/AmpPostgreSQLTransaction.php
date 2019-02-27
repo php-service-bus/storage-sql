@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SQL databases adapters implementation
+ * SQL databases adapters implementation.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -12,21 +12,21 @@ declare(strict_types = 1);
 
 namespace ServiceBus\Storage\Sql\AmpPosgreSQL;
 
-use Amp\Postgres\Transaction as AmpTransaction;
 use function Amp\call;
+use Amp\Postgres\Transaction as AmpTransaction;
 use Amp\Promise;
 use Psr\Log\LoggerInterface;
 use ServiceBus\Storage\Common\Transaction;
 
 /**
- *  Async PostgreSQL transaction adapter
+ * Async PostgreSQL transaction adapter.
  *
  * @internal
  */
 final class AmpPostgreSQLTransaction implements Transaction
 {
     /**
-     * Original transaction object
+     * Original transaction object.
      *
      * @var AmpTransaction
      */
@@ -49,7 +49,7 @@ final class AmpPostgreSQLTransaction implements Transaction
 
     public function __destruct()
     {
-        if(true === $this->transaction->isAlive())
+        if (true === $this->transaction->isAlive())
         {
             $this->transaction->close();
         }
@@ -58,7 +58,7 @@ final class AmpPostgreSQLTransaction implements Transaction
     /**
      * @psalm-suppress MixedTypeCoercion
      *
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function execute(string $queryString, array $parameters = []): Promise
     {
@@ -76,8 +76,8 @@ final class AmpPostgreSQLTransaction implements Transaction
                         yield $this->transaction->execute($queryString, $parameters)
                     );
                 }
-                    // @codeCoverageIgnoreStart
-                catch(\Throwable $throwable)
+                // @codeCoverageIgnoreStart
+                catch (\Throwable $throwable)
                 {
                     throw adaptAmpThrowable($throwable);
                 }
@@ -89,7 +89,7 @@ final class AmpPostgreSQLTransaction implements Transaction
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function commit(): Promise
     {
@@ -109,8 +109,8 @@ final class AmpPostgreSQLTransaction implements Transaction
 
                     $this->transaction->close();
                 }
-                    // @codeCoverageIgnoreStart
-                catch(\Throwable $throwable)
+                // @codeCoverageIgnoreStart
+                catch (\Throwable $throwable)
                 {
                     throw adaptAmpThrowable($throwable);
                 }
@@ -120,7 +120,7 @@ final class AmpPostgreSQLTransaction implements Transaction
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function rollback(): Promise
     {
@@ -138,8 +138,8 @@ final class AmpPostgreSQLTransaction implements Transaction
                     /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
                     yield $this->transaction->rollback();
                 }
-                    // @codeCoverageIgnoreStart
-                catch(\Throwable $throwable)
+                // @codeCoverageIgnoreStart
+                catch (\Throwable $throwable)
                 {
                     /** We will not throw an exception */
                 }
@@ -149,11 +149,11 @@ final class AmpPostgreSQLTransaction implements Transaction
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function unescapeBinary($payload): string
     {
-        if(true === \is_resource($payload))
+        if (true === \is_resource($payload))
         {
             $payload = \stream_get_contents($payload, -1, 0);
         }

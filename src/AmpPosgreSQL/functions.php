@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SQL databases adapters implementation
+ * SQL databases adapters implementation.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -18,21 +18,20 @@ use ServiceBus\Storage\Common\Exceptions as InternalExceptions;
 use ServiceBus\Storage\Common\StorageConfiguration;
 
 /**
- * Convert AmPHP exceptions
+ * Convert AmPHP exceptions.
  *
  * @internal
  *
  * @param \Throwable $throwable
  *
- * @return InternalExceptions\UniqueConstraintViolationCheckFailed|InternalExceptions\ConnectionFailed|InternalExceptions\StorageInteractingFailed
+ * @return InternalExceptions\ConnectionFailed|InternalExceptions\StorageInteractingFailed|InternalExceptions\UniqueConstraintViolationCheckFailed
  */
 function adaptAmpThrowable(\Throwable $throwable): \Throwable
 {
-    if(
+    if (
         $throwable instanceof QueryExecutionError &&
         true === \in_array((int) $throwable->getDiagnostics()['sqlstate'], [23503, 23505], true)
-    )
-    {
+    ) {
         return new InternalExceptions\UniqueConstraintViolationCheckFailed(
             $throwable->getMessage(),
             (int) $throwable->getCode(),
@@ -40,7 +39,7 @@ function adaptAmpThrowable(\Throwable $throwable): \Throwable
         );
     }
 
-    if($throwable instanceof ConnectionException)
+    if ($throwable instanceof ConnectionException)
     {
         return new InternalExceptions\ConnectionFailed(
             $throwable->getMessage(),
@@ -61,13 +60,13 @@ function adaptAmpThrowable(\Throwable $throwable): \Throwable
  *
  * @param string $connectionDsn
  *
- * @return AmpPostgreSQLAdapter
- *
  * @throws InternalExceptions\InvalidConfigurationOptions
+ *
+ * @return AmpPostgreSQLAdapter
  */
 function postgreSqlAdapterFactory(string $connectionDsn): AmpPostgreSQLAdapter
 {
     return new AmpPostgreSQLAdapter(
-       new StorageConfiguration($connectionDsn)
+        new StorageConfiguration($connectionDsn)
     );
 }

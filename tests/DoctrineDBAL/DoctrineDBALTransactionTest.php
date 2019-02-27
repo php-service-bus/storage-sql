@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SQL databases adapters implementation
+ * SQL databases adapters implementation.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -13,9 +13,9 @@ declare(strict_types = 1);
 namespace ServiceBus\Storage\Sql\Tests\DoctrineDBAL;
 
 use function Amp\Promise\wait;
+use function ServiceBus\Storage\Sql\DoctrineDBAL\inMemoryAdapter;
 use ServiceBus\Storage\Common\DatabaseAdapter;
 use ServiceBus\Storage\Sql\DoctrineDBAL\DoctrineDBALAdapter;
-use function ServiceBus\Storage\Sql\DoctrineDBAL\inMemoryAdapter;
 use ServiceBus\Storage\Sql\Tests\BaseTransactionTest;
 
 /**
@@ -29,7 +29,7 @@ final class DoctrineDBALTransactionTest extends BaseTransactionTest
     private static $adapter;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      *
      * @throws \Throwable
      */
@@ -47,7 +47,7 @@ final class DoctrineDBALTransactionTest extends BaseTransactionTest
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      *
      * @throws \Throwable
      */
@@ -67,7 +67,7 @@ final class DoctrineDBALTransactionTest extends BaseTransactionTest
      */
     protected static function getAdapter(): DatabaseAdapter
     {
-        if(null === self::$adapter)
+        if (null === self::$adapter)
         {
             self::$adapter = inMemoryAdapter();
         }

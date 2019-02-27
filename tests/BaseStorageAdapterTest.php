@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SQL databases adapters implementation
+ * SQL databases adapters implementation.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -12,15 +12,15 @@ declare(strict_types = 1);
 
 namespace ServiceBus\Storage\Sql\Tests;
 
-use Amp\Promise;
 use function Amp\Promise\wait;
+use function ServiceBus\Storage\Sql\fetchAll;
+use function ServiceBus\Storage\Sql\fetchOne;
+use Amp\Promise;
 use PHPUnit\Framework\TestCase;
 use ServiceBus\Storage\Common\DatabaseAdapter;
 use ServiceBus\Storage\Common\Exceptions\OneResultExpected;
 use ServiceBus\Storage\Common\Exceptions\StorageInteractingFailed;
 use ServiceBus\Storage\Common\Exceptions\UniqueConstraintViolationCheckFailed;
-use function ServiceBus\Storage\Sql\fetchAll;
-use function ServiceBus\Storage\Sql\fetchOne;
 
 /**
  *
@@ -28,14 +28,14 @@ use function ServiceBus\Storage\Sql\fetchOne;
 abstract class BaseStorageAdapterTest extends TestCase
 {
     /**
-     * Get database adapter
+     * Get database adapter.
      *
      * @return DatabaseAdapter
      */
     abstract protected static function getAdapter(): DatabaseAdapter;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      *
      * @throws \Throwable
      */
@@ -53,7 +53,7 @@ abstract class BaseStorageAdapterTest extends TestCase
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      *
      * @throws \Throwable
      */
@@ -69,9 +69,10 @@ abstract class BaseStorageAdapterTest extends TestCase
     /**
      * @test
      *
+     * @throws \Throwable
+     *
      * @return void
      *
-     * @throws \Throwable
      */
     public function unescapeBinary(): void
     {
@@ -83,7 +84,7 @@ abstract class BaseStorageAdapterTest extends TestCase
             'INSERT INTO storage_test_table (id, identifier_class, payload) VALUES (?, ?, ?), (?, ?, ?)',
             [
                 '77961031-fd0f-4946-b439-dfc2902b961a', 'SomeIdentifierClass', $data,
-                '81c3f1d1-1f75-478e-8bc6-2bb02cd381be', 'SomeIdentifierClass2', \sha1(\random_bytes(256))
+                '81c3f1d1-1f75-478e-8bc6-2bb02cd381be', 'SomeIdentifierClass2', \sha1(\random_bytes(256)),
             ]
         );
 
@@ -95,15 +96,16 @@ abstract class BaseStorageAdapterTest extends TestCase
 
         /** @noinspection StaticInvocationViaThisInspection */
         static::assertCount(1, $result);
-        static::assertEquals($data, $adapter->unescapeBinary($result[0]['payload']));
+        static::assertSame($data, $adapter->unescapeBinary($result[0]['payload']));
     }
 
     /**
      * @test
      *
+     * @throws \Throwable
+     *
      * @return void
      *
-     * @throws \Throwable
      */
     public function resultSet(): void
     {
@@ -122,9 +124,10 @@ abstract class BaseStorageAdapterTest extends TestCase
     /**
      * @test
      *
+     * @throws \Throwable
+     *
      * @return void
      *
-     * @throws \Throwable
      */
     public function emptyResultSet(): void
     {
@@ -140,9 +143,10 @@ abstract class BaseStorageAdapterTest extends TestCase
     /**
      * @test
      *
+     * @throws \Throwable
+     *
      * @return void
      *
-     * @throws \Throwable
      */
     public function failedQuery(): void
     {
@@ -154,9 +158,10 @@ abstract class BaseStorageAdapterTest extends TestCase
     /**
      * @test
      *
+     * @throws \Throwable
+     *
      * @return void
      *
-     * @throws \Throwable
      */
     public function findOne(): void
     {
@@ -178,15 +183,16 @@ abstract class BaseStorageAdapterTest extends TestCase
         static::assertArrayHasKey('identifier_class', $result);
 
         /** @noinspection StaticInvocationViaThisInspection */
-        static::assertEquals('SomeIdentifierClass2', $result['identifier_class']);
+        static::assertSame('SomeIdentifierClass2', $result['identifier_class']);
     }
 
     /**
      * @test
      *
+     * @throws \Throwable
+     *
      * @return void
      *
-     * @throws \Throwable
      */
     public function findOneWhenEmptySet(): void
     {
@@ -209,9 +215,10 @@ abstract class BaseStorageAdapterTest extends TestCase
     /**
      * @test
      *
+     * @throws \Throwable
+     *
      * @return void
      *
-     * @throws \Throwable
      */
     public function findOneWhenWrongSet(): void
     {
@@ -231,9 +238,10 @@ abstract class BaseStorageAdapterTest extends TestCase
     /**
      * @test
      *
+     * @throws \Throwable
+     *
      * @return void
      *
-     * @throws \Throwable
      */
     public function uniqueKeyCheckFailed(): void
     {
@@ -245,7 +253,7 @@ abstract class BaseStorageAdapterTest extends TestCase
             'INSERT INTO storage_test_table (id, identifier_class) VALUES (?, ?), (?, ?)',
             [
                 '77961031-fd0f-4946-b439-dfc2902b961a', 'SomeIdentifierClass',
-                '77961031-fd0f-4946-b439-dfc2902b961a', 'SomeIdentifierClass'
+                '77961031-fd0f-4946-b439-dfc2902b961a', 'SomeIdentifierClass',
             ]
         );
 
@@ -255,9 +263,10 @@ abstract class BaseStorageAdapterTest extends TestCase
     /**
      * @test
      *
+     * @throws \Throwable
+     *
      * @return void
      *
-     * @throws \Throwable
      */
     public function rowsCount(): void
     {
@@ -269,7 +278,7 @@ abstract class BaseStorageAdapterTest extends TestCase
                 'INSERT INTO storage_test_table (id, identifier_class) VALUES (?, ?), (?, ?)',
                 [
                     '77961031-fd0f-4946-b439-dfc2902b961a', 'SomeIdentifierClass',
-                    '77961031-fd0f-4946-b439-dfc2902b961d', 'SomeIdentifierClass'
+                    '77961031-fd0f-4946-b439-dfc2902b961d', 'SomeIdentifierClass',
                 ]
             )
         );
@@ -313,9 +322,10 @@ abstract class BaseStorageAdapterTest extends TestCase
     /**
      * @param DatabaseAdapter $adapter
      *
+     * @throws \Throwable
+     *
      * @return Promise
      *
-     * @throws \Throwable
      */
     private static function importFixtures(DatabaseAdapter $adapter): Promise
     {
@@ -323,7 +333,7 @@ abstract class BaseStorageAdapterTest extends TestCase
             'INSERT INTO storage_test_table (id, identifier_class) VALUES (?, ?), (?, ?)',
             [
                 '77961031-fd0f-4946-b439-dfc2902b961a', 'SomeIdentifierClass',
-                '81c3f1d1-1f75-478e-8bc6-2bb02cd381be', 'SomeIdentifierClass2'
+                '81c3f1d1-1f75-478e-8bc6-2bb02cd381be', 'SomeIdentifierClass2',
             ]
         );
     }

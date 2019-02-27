@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SQL databases adapters implementation
+ * SQL databases adapters implementation.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -13,23 +13,22 @@ declare(strict_types = 1);
 namespace ServiceBus\Storage\Sql\Tests;
 
 use function Amp\Promise\wait;
-use PHPUnit\Framework\Constraint\IsType;
-use PHPUnit\Framework\TestCase;
-use ServiceBus\Storage\Common\DatabaseAdapter;
 use function ServiceBus\Storage\Sql\equalsCriteria;
 use function ServiceBus\Storage\Sql\fetchAll;
 use function ServiceBus\Storage\Sql\fetchOne;
 use function ServiceBus\Storage\Sql\insertQuery;
 use function ServiceBus\Storage\Sql\selectQuery;
+use PHPUnit\Framework\Constraint\IsType;
+use PHPUnit\Framework\TestCase;
+use ServiceBus\Storage\Common\DatabaseAdapter;
 
 /**
  *
  */
 abstract class BaseTransactionTest extends TestCase
 {
-
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      *
      * @throws \Throwable
      */
@@ -45,7 +44,7 @@ abstract class BaseTransactionTest extends TestCase
     }
 
     /**
-     * Get database adapter
+     * Get database adapter.
      *
      * @return DatabaseAdapter
      */
@@ -54,9 +53,10 @@ abstract class BaseTransactionTest extends TestCase
     /**
      * @test
      *
+     * @throws \Throwable
+     *
      * @return void
      *
-     * @throws \Throwable
      */
     public function simpleTransaction(): void
     {
@@ -67,9 +67,10 @@ abstract class BaseTransactionTest extends TestCase
 
         wait(
             $adapter->execute(
-                'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)', [
+                'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)',
+                [
                     'c072f311-4a0f-4d53-91ea-575b96706eeb', 'value1',
-                    '0e6007d9-5386-40ae-a05c-9decec172d60', 'value2'
+                    '0e6007d9-5386-40ae-a05c-9decec172d60', 'value2',
                 ]
             )
         );
@@ -77,7 +78,6 @@ abstract class BaseTransactionTest extends TestCase
         wait($transaction->commit());
 
         /** check results */
-
         $result = wait(
             fetchAll(
                 wait($adapter->execute('SELECT * FROM test_result_set'))
@@ -91,9 +91,10 @@ abstract class BaseTransactionTest extends TestCase
     /**
      * @test
      *
+     * @throws \Throwable
+     *
      * @return void
      *
-     * @throws \Throwable
      */
     public function transactionWithReadData(): void
     {
@@ -123,9 +124,10 @@ abstract class BaseTransactionTest extends TestCase
     /**
      * @test
      *
+     * @throws \Throwable
+     *
      * @return void
      *
-     * @throws \Throwable
      */
     public function rollback(): void
     {

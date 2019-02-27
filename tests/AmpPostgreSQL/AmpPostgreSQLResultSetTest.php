@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SQL databases adapters implementation
+ * SQL databases adapters implementation.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -13,12 +13,12 @@ declare(strict_types = 1);
 namespace ServiceBus\Storage\Sql\Tests\AmpPostgreSQL;
 
 use function Amp\Promise\wait;
-use PHPUnit\Framework\Constraint\IsType;
-use PHPUnit\Framework\TestCase;
-use ServiceBus\Storage\Sql\AmpPosgreSQL\AmpPostgreSQLAdapter;
 use function ServiceBus\Storage\Sql\AmpPosgreSQL\postgreSqlAdapterFactory;
 use function ServiceBus\Storage\Sql\fetchAll;
 use function ServiceBus\Storage\Sql\fetchOne;
+use PHPUnit\Framework\Constraint\IsType;
+use PHPUnit\Framework\TestCase;
+use ServiceBus\Storage\Sql\AmpPosgreSQL\AmpPostgreSQLAdapter;
 
 /**
  *
@@ -31,7 +31,7 @@ final class AmpPostgreSQLResultSetTest extends TestCase
     private $adapter;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      *
      * @throws \Throwable
      */
@@ -49,7 +49,7 @@ final class AmpPostgreSQLResultSetTest extends TestCase
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      *
      * @throws \Throwable
      */
@@ -65,9 +65,10 @@ final class AmpPostgreSQLResultSetTest extends TestCase
     /**
      * @test
      *
+     * @throws \Throwable
+     *
      * @return void
      *
-     * @throws \Throwable
      */
     public function fetchOne(): void
     {
@@ -75,9 +76,10 @@ final class AmpPostgreSQLResultSetTest extends TestCase
         $uuid2 = 'ad1278ad-031a-45e0-aa04-2a03e143d438';
 
         $promise = $this->adapter->execute(
-            'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)', [
+            'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)',
+            [
                 $uuid1, 'value1',
-                $uuid2, 'value2'
+                $uuid2, 'value2',
             ]
         );
 
@@ -90,7 +92,7 @@ final class AmpPostgreSQLResultSetTest extends TestCase
         );
 
         static::assertNotEmpty($result);
-        static:: assertEquals(['id' => $uuid2, 'value' => 'value2'], $result);
+        static:: assertSame(['id' => $uuid2, 'value' => 'value2'], $result);
 
         $result = wait(
             fetchOne(
@@ -106,16 +108,18 @@ final class AmpPostgreSQLResultSetTest extends TestCase
     /**
      * @test
      *
+     * @throws \Throwable
+     *
      * @return void
      *
-     * @throws \Throwable
      */
     public function fetchAll(): void
     {
         $promise = $this->adapter->execute(
-            'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)', [
+            'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)',
+            [
                 'b922bda9-d2e5-4b41-b30d-e3b9a3717753', 'value1',
-                '3fdbbc08-c6bd-4fd9-b343-1c069c0d3044', 'value2'
+                '3fdbbc08-c6bd-4fd9-b343-1c069c0d3044', 'value2',
             ]
         );
 
@@ -134,9 +138,10 @@ final class AmpPostgreSQLResultSetTest extends TestCase
     /**
      * @test
      *
+     * @throws \Throwable
+     *
      * @return void
      *
-     * @throws \Throwable
      */
     public function fetchAllWithEmptySet(): void
     {
@@ -153,16 +158,18 @@ final class AmpPostgreSQLResultSetTest extends TestCase
     /**
      * @test
      *
+     * @throws \Throwable
+     *
      * @return void
      *
-     * @throws \Throwable
      */
     public function multipleGetCurrentRow(): void
     {
         $promise = $this->adapter->execute(
-            'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)', [
+            'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)',
+            [
                 '457e634c-6fef-4144-a5e4-76def3f51c10', 'value1',
-                'f4edd226-6fbf-499d-b6c4-b419560a7291', 'value2'
+                'f4edd226-6fbf-499d-b6c4-b419560a7291', 'value2',
             ]
         );
 
@@ -171,28 +178,29 @@ final class AmpPostgreSQLResultSetTest extends TestCase
         /** @var \ServiceBus\Storage\Common\ResultSet $result */
         $result = wait($this->adapter->execute('SELECT * FROM test_result_set'));
 
-        while(wait($result->advance()))
+        while (wait($result->advance()))
         {
             $row     = $result->getCurrent();
             $rowCopy = $result->getCurrent();
 
-            static::assertEquals($row, $rowCopy);
+            static::assertSame($row, $rowCopy);
         }
     }
 
     /**
      * @test
      *
+     * @throws \Throwable
+     *
      * @return void
      *
-     * @throws \Throwable
      */
     public function executeCommand(): void
     {
         /** @var \ServiceBus\Storage\Common\ResultSet $result */
         $result = wait($this->adapter->execute('DELETE FROM test_result_set'));
 
-        while(wait($result->advance()))
+        while (wait($result->advance()))
         {
             static::fail('Non empty cycle');
         }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SQL databases adapters implementation
+ * SQL databases adapters implementation.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -25,21 +25,21 @@ use ServiceBus\Storage\Common\Exceptions\InvalidConfigurationOptions;
 use ServiceBus\Storage\Common\StorageConfiguration;
 
 /**
- * DoctrineDBAL adapter
+ * DoctrineDBAL adapter.
  *
  * Designed primarily for testing. Please do not use this adapter in your code
  */
 final class DoctrineDBALAdapter implements DatabaseAdapter
 {
     /**
-     * Storage config
+     * Storage config.
      *
      * @var StorageConfiguration
      */
     private $configuration;
 
     /**
-     * Doctrine connection
+     * Doctrine connection.
      *
      * @var Connection|null
      */
@@ -63,7 +63,7 @@ final class DoctrineDBALAdapter implements DatabaseAdapter
     /**
      * @psalm-suppress MixedTypeCoercion
      *
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function execute(string $queryString, array $parameters = []): Promise
     {
@@ -74,7 +74,7 @@ final class DoctrineDBALAdapter implements DatabaseAdapter
             $statement = $this->connection()->prepare($queryString);
             $isSuccess = $statement->execute($parameters);
 
-            if(false === $isSuccess)
+            if (false === $isSuccess)
             {
                 // @codeCoverageIgnoreStart
                 /** @var array{0:string, 1:int, 2:string} $errorInfo */
@@ -89,7 +89,7 @@ final class DoctrineDBALAdapter implements DatabaseAdapter
 
             return new Success(new DoctrineDBALResultSet($this->connection(), $statement));
         }
-        catch(\Throwable $throwable)
+        catch (\Throwable $throwable)
         {
             return new Failure(adaptDbalThrowable($throwable));
         }
@@ -98,7 +98,7 @@ final class DoctrineDBALAdapter implements DatabaseAdapter
     /**
      * @psalm-suppress MixedTypeCoercion
      *
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function transaction(): Promise
     {
@@ -110,9 +110,9 @@ final class DoctrineDBALAdapter implements DatabaseAdapter
 
             return new Success(new DoctrineDBALTransaction($this->connection(), $this->logger));
         }
-            // @codeCoverageIgnoreStart
-            /** @noinspection PhpRedundantCatchClauseInspection */
-        catch(DBALException $exception)
+        // @codeCoverageIgnoreStart
+        /** @noinspection PhpRedundantCatchClauseInspection */
+        catch (DBALException $exception)
         {
             return new Failure(adaptDbalThrowable($exception));
         }
@@ -120,17 +120,16 @@ final class DoctrineDBALAdapter implements DatabaseAdapter
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function unescapeBinary($payload): string
     {
-        /** @var string|resource $payload */
-
-        if(true === \is_resource($payload))
+        /** @var resource|string $payload */
+        if (true === \is_resource($payload))
         {
             $result = \stream_get_contents($payload, -1, 0);
 
-            if(false !== $result)
+            if (false !== $result)
             {
                 return $result;
             }
@@ -139,23 +138,22 @@ final class DoctrineDBALAdapter implements DatabaseAdapter
         return (string) $payload;
     }
 
-
     /**
-     * Get connection instance
-     *
-     * @return Connection
+     * Get connection instance.
      *
      * @throws \ServiceBus\Storage\Common\Exceptions\InvalidConfigurationOptions
+     *
+     * @return Connection
      */
     private function connection(): Connection
     {
-        if(null === $this->connection)
+        if (null === $this->connection)
         {
             try
             {
                 $this->connection = DriverManager::getConnection(['url' => $this->configuration->originalDSN]);
             }
-            catch(\Throwable $throwable)
+            catch (\Throwable $throwable)
             {
                 throw new InvalidConfigurationOptions($throwable->getMessage(), (int) $throwable->getCode(), $throwable);
             }

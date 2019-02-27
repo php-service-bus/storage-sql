@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SQL databases adapters implementation
+ * SQL databases adapters implementation.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -13,12 +13,12 @@ declare(strict_types = 1);
 namespace ServiceBus\Storage\Sql\Tests\DoctrineDBAL;
 
 use function Amp\Promise\wait;
-use PHPUnit\Framework\Constraint\IsType;
-use PHPUnit\Framework\TestCase;
-use ServiceBus\Storage\Sql\DoctrineDBAL\DoctrineDBALAdapter;
 use function ServiceBus\Storage\Sql\DoctrineDBAL\inMemoryAdapter;
 use function ServiceBus\Storage\Sql\fetchAll;
 use function ServiceBus\Storage\Sql\fetchOne;
+use PHPUnit\Framework\Constraint\IsType;
+use PHPUnit\Framework\TestCase;
+use ServiceBus\Storage\Sql\DoctrineDBAL\DoctrineDBALAdapter;
 
 /**
  *
@@ -31,7 +31,7 @@ final class DoctrineDBALResultSetTest extends TestCase
     private $adapter;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      *
      * @throws \Throwable
      */
@@ -49,7 +49,7 @@ final class DoctrineDBALResultSetTest extends TestCase
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      *
      * @throws \Throwable
      */
@@ -65,16 +65,18 @@ final class DoctrineDBALResultSetTest extends TestCase
     /**
      * @test
      *
+     * @throws \Throwable
+     *
      * @return void
      *
-     * @throws \Throwable
      */
     public function fetchOne(): void
     {
         $promise = $this->adapter->execute(
-            'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)', [
+            'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)',
+            [
                 'uuid1', 'value1',
-                'uuid2', 'value2'
+                'uuid2', 'value2',
             ]
         );
 
@@ -87,7 +89,7 @@ final class DoctrineDBALResultSetTest extends TestCase
         );
 
         static::assertNotEmpty($result);
-        static:: assertEquals(['id' => 'uuid2', 'value' => 'value2'], $result);
+        static:: assertSame(['id' => 'uuid2', 'value' => 'value2'], $result);
 
         $result = wait(
             fetchOne(
@@ -101,16 +103,18 @@ final class DoctrineDBALResultSetTest extends TestCase
     /**
      * @test
      *
+     * @throws \Throwable
+     *
      * @return void
      *
-     * @throws \Throwable
      */
     public function fetchAll(): void
     {
         $promise = $this->adapter->execute(
-            'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)', [
+            'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)',
+            [
                 'uuid1', 'value1',
-                'uuid2', 'value2'
+                'uuid2', 'value2',
             ]
         );
 
@@ -129,9 +133,10 @@ final class DoctrineDBALResultSetTest extends TestCase
     /**
      * @test
      *
+     * @throws \Throwable
+     *
      * @return void
      *
-     * @throws \Throwable
      */
     public function fetchAllWithEmptySet(): void
     {
@@ -148,16 +153,18 @@ final class DoctrineDBALResultSetTest extends TestCase
     /**
      * @test
      *
+     * @throws \Throwable
+     *
      * @return void
      *
-     * @throws \Throwable
      */
     public function multipleGetCurrentRow(): void
     {
         $promise = $this->adapter->execute(
-            'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)', [
+            'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)',
+            [
                 'uuid1', 'value1',
-                'uuid2', 'value2'
+                'uuid2', 'value2',
             ]
         );
 
@@ -166,12 +173,12 @@ final class DoctrineDBALResultSetTest extends TestCase
         /** @var \ServiceBus\Storage\Common\ResultSet $result */
         $result = wait($this->adapter->execute('SELECT * FROM test_result_set'));
 
-        while(wait($result->advance()))
+        while (wait($result->advance()))
         {
             $row     = $result->getCurrent();
             $rowCopy = $result->getCurrent();
 
-            static::assertEquals($row, $rowCopy);
+            static::assertSame($row, $rowCopy);
         }
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SQL databases adapters implementation
+ * SQL databases adapters implementation.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -26,7 +26,7 @@ use ServiceBus\Storage\Common\Transaction;
 final class DoctrineDBALTransaction implements Transaction
 {
     /**
-     * DBAL connection
+     * DBAL connection.
      *
      * @var Connection
      */
@@ -50,7 +50,7 @@ final class DoctrineDBALTransaction implements Transaction
     /**
      * @psalm-suppress MixedTypeCoercion
      *
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function execute(string $queryString, array $parameters = []): Promise
     {
@@ -61,7 +61,7 @@ final class DoctrineDBALTransaction implements Transaction
             $statement = $this->connection->prepare($queryString);
             $isSuccess = $statement->execute($parameters);
 
-            if(false === $isSuccess)
+            if (false === $isSuccess)
             {
                 // @codeCoverageIgnoreStart
                 /** @var string $message Driver-specific error message */
@@ -73,8 +73,8 @@ final class DoctrineDBALTransaction implements Transaction
 
             return new Success(new DoctrineDBALResultSet($this->connection, $statement));
         }
-            // @codeCoverageIgnoreStart
-        catch(\Throwable $throwable)
+        // @codeCoverageIgnoreStart
+        catch (\Throwable $throwable)
         {
             return new Failure(adaptDbalThrowable($throwable));
         }
@@ -82,7 +82,7 @@ final class DoctrineDBALTransaction implements Transaction
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function commit(): Promise
     {
@@ -99,8 +99,8 @@ final class DoctrineDBALTransaction implements Transaction
 
                     $this->connection->commit();
                 }
-                    // @codeCoverageIgnoreStart
-                catch(\Throwable $throwable)
+                // @codeCoverageIgnoreStart
+                catch (\Throwable $throwable)
                 {
                     throw adaptDbalThrowable($throwable);
                 }
@@ -110,7 +110,7 @@ final class DoctrineDBALTransaction implements Transaction
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function rollback(): Promise
     {
@@ -127,8 +127,8 @@ final class DoctrineDBALTransaction implements Transaction
 
                     $this->connection->rollBack();
                 }
-                    // @codeCoverageIgnoreStart
-                catch(\Throwable $throwable)
+                // @codeCoverageIgnoreStart
+                catch (\Throwable $throwable)
                 {
                     /** We will not throw an exception */
                 }
@@ -138,17 +138,16 @@ final class DoctrineDBALTransaction implements Transaction
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function unescapeBinary($payload): string
     {
-        /** @var string|resource $payload */
-
-        if(true === \is_resource($payload))
+        /** @var resource|string $payload */
+        if (true === \is_resource($payload))
         {
             $result = \stream_get_contents($payload, -1, 0);
 
-            if(false !== $result)
+            if (false !== $result)
             {
                 return $result;
             }

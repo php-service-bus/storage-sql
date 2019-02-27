@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SQL databases adapters implementation
+ * SQL databases adapters implementation.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -13,11 +13,11 @@ declare(strict_types = 1);
 namespace ServiceBus\Storage\Sql;
 
 use function Amp\call;
+use function Latitude\QueryBuilder\field;
 use Amp\Promise;
 use Latitude\QueryBuilder\CriteriaInterface;
 use Latitude\QueryBuilder\Engine\PostgresEngine;
 use Latitude\QueryBuilder\EngineInterface;
-use function Latitude\QueryBuilder\field;
 use Latitude\QueryBuilder\Query\DeleteQuery;
 use Latitude\QueryBuilder\Query\InsertQuery;
 use Latitude\QueryBuilder\Query\SelectQuery;
@@ -29,16 +29,16 @@ use ServiceBus\Storage\Common\ResultSet;
 
 /**
  * Collect iterator data
- * Not recommended for use on large amounts of data
+ * Not recommended for use on large amounts of data.
  *
  * @noinspection   PhpDocRedundantThrowsInspection
  * @psalm-suppress MixedTypeCoercion Incorrect resolving the value of the promise
  *
  * @param ResultSet $iterator
  *
- * @return Promise<array<int, mixed>|null>
- *
  * @throws \ServiceBus\Storage\Common\Exceptions\ResultSetIterationFailed
+ *
+ * @return Promise<array<int, mixed>|null>
  */
 function fetchAll(ResultSet $iterator): Promise
 {
@@ -50,7 +50,7 @@ function fetchAll(ResultSet $iterator): Promise
             $array = [];
 
             /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
-            while(yield $iterator->advance())
+            while (yield $iterator->advance())
             {
                 $array[] = $iterator->getCurrent();
             }
@@ -62,17 +62,17 @@ function fetchAll(ResultSet $iterator): Promise
 }
 
 /**
- * Extract 1 result
+ * Extract 1 result.
  *
  * @noinspection   PhpDocRedundantThrowsInspection
  * @psalm-suppress MixedTypeCoercion Incorrect resolving the value of the promise
  *
  * @param ResultSet $iterator
  *
- * @return Promise<array<string, mixed>|null>
- *
  * @throws \ServiceBus\Storage\Common\Exceptions\ResultSetIterationFailed
  * @throws \ServiceBus\Storage\Common\Exceptions\OneResultExpected The result must contain only 1 row
+ *
+ * @return Promise<array<string, mixed>|null>
  */
 function fetchOne(ResultSet $iterator): Promise
 {
@@ -82,14 +82,15 @@ function fetchOne(ResultSet $iterator): Promise
         {
             /**
              * @psalm-suppress TooManyTemplateParams Wrong Promise template
+             *
              * @var array $collection
              */
             $collection   = yield fetchAll($iterator);
             $resultsCount = \count($collection);
 
-            if(0 === $resultsCount || 1 === $resultsCount)
+            if (0 === $resultsCount || 1 === $resultsCount)
             {
-                /** @var bool|array $endElement */
+                /** @var array|bool $endElement */
                 $endElement = \end($collection);
 
                 return false !== $endElement ? $endElement : null;
@@ -108,15 +109,15 @@ function fetchOne(ResultSet $iterator): Promise
 
 /**
  * @param string                  $field
- * @param int|string|float|object $value
- *
- * @return \Latitude\QueryBuilder\CriteriaInterface
+ * @param float|int|object|string $value
  *
  * @throws \ServiceBus\Storage\Common\Exceptions\IncorrectParameterCast
+ *
+ * @return \Latitude\QueryBuilder\CriteriaInterface
  */
 function equalsCriteria(string $field, $value): CriteriaInterface
 {
-    if(true === \is_object($value))
+    if (true === \is_object($value))
     {
         $value = castObjectToString($value);
     }
@@ -126,15 +127,15 @@ function equalsCriteria(string $field, $value): CriteriaInterface
 
 /**
  * @param string                  $field
- * @param int|string|float|object $value
- *
- * @return \Latitude\QueryBuilder\CriteriaInterface
+ * @param float|int|object|string $value
  *
  * @throws \ServiceBus\Storage\Common\Exceptions\IncorrectParameterCast
+ *
+ * @return \Latitude\QueryBuilder\CriteriaInterface
  */
 function notEqualsCriteria(string $field, $value): CriteriaInterface
 {
-    if(true === \is_object($value))
+    if (true === \is_object($value))
     {
         $value = castObjectToString($value);
     }
@@ -143,7 +144,7 @@ function notEqualsCriteria(string $field, $value): CriteriaInterface
 }
 
 /**
- * Create query builder
+ * Create query builder.
  *
  * @param EngineInterface|null $engine
  *
@@ -155,7 +156,7 @@ function queryBuilder(EngineInterface $engine = null): QueryFactory
 }
 
 /**
- * Create select query (for PostgreSQL)
+ * Create select query (for PostgreSQL).
  *
  * @noinspection PhpDocSignatureInspection
  *
@@ -170,14 +171,16 @@ function selectQuery(string $fromTable, string ...$columns): SelectQuery
 }
 
 /**
- * Create update query (for PostgreSQL)
+ * Create update query (for PostgreSQL).
  *
- * @param string                      $tableName
- * @param array<string, mixed>|object $toUpdate
+ * @psalm-param array<string, mixed>|object $toUpdate
  *
- * @return UpdateQuery
+ * @param string       $tableName
+ * @param array|object $toUpdate
  *
  * @throws \ServiceBus\Storage\Common\Exceptions\IncorrectParameterCast
+ *
+ * @return UpdateQuery
  */
 function updateQuery(string $tableName, $toUpdate): UpdateQuery
 {
@@ -187,7 +190,7 @@ function updateQuery(string $tableName, $toUpdate): UpdateQuery
 }
 
 /**
- * Create delete query (for PostgreSQL)
+ * Create delete query (for PostgreSQL).
  *
  * @param string $fromTable
  *
@@ -199,14 +202,16 @@ function deleteQuery(string $fromTable): DeleteQuery
 }
 
 /**
- * Create insert query (for PostgreSQL)
+ * Create insert query (for PostgreSQL).
  *
- * @param string                      $toTable
- * @param array<string, mixed>|object $toInsert
+ * @psalm-param array<string, mixed>|object $toInsert
  *
- * @return InsertQuery
+ * @param string       $toTable
+ * @param array|object $toInsert
  *
  * @throws \ServiceBus\Storage\Common\Exceptions\IncorrectParameterCast
+ *
+ * @return InsertQuery
  */
 function insertQuery(string $toTable, $toInsert): InsertQuery
 {
@@ -216,22 +221,24 @@ function insertQuery(string $toTable, $toInsert): InsertQuery
 }
 
 /**
- * Receive object as array (property/value)
+ * Receive object as array (property/value).
  *
  * @internal
  *
+ * @psalm-return array<string, float|int|string|null>
+ *
  * @param object $object
  *
- * @return array<string, int|float|null|string>
- *
  * @throws \ServiceBus\Storage\Common\Exceptions\IncorrectParameterCast
+ *
+ * @return array
  */
 function castObjectToArray(object $object): array
 {
     $result = [];
 
-    /** @var int|float|null|string|object $value */
-    foreach(getObjectVars($object) as $key => $value)
+    /** @var float|int|object|string|null $value */
+    foreach (getObjectVars($object) as $key => $value)
     {
         $result[toSnakeCase($key)] = cast($key, $value);
     }
@@ -240,13 +247,15 @@ function castObjectToArray(object $object): array
 }
 
 /**
- * Gets the properties of the given object
+ * Gets the properties of the given object.
  *
  * @internal
  *
+ * @psalm-return array<string, float|int|object|string|null>
+ *
  * @param object $object
  *
- * @return array<string, int|float|null|string|object>
+ * @return array
  */
 function getObjectVars(object $object): array
 {
@@ -264,7 +273,11 @@ function getObjectVars(object $object): array
         $object
     );
 
-    /** @var array<string, int|float|null|string|object> $vars */
+    /**
+     * @psalm-var array<string, float|int|object|string|null> $vars
+     *
+     * @var array $vars
+     */
     $vars = $closure();
 
     return $vars;
@@ -283,7 +296,7 @@ function toSnakeCase(string $string): string
 {
     $replaced = \preg_replace('/(?<!^)[A-Z]/', '_$0', $string);
 
-    if(true === \is_string($replaced))
+    if (true === \is_string($replaced))
     {
         return \strtolower($replaced);
     }
@@ -295,21 +308,22 @@ function toSnakeCase(string $string): string
  * @internal
  *
  * @param string                       $key
- * @param int|float|null|string|object $value
- *
- * @return int|float|null|string
+ * @param float|int|object|string|null $value
  *
  * @throws \ServiceBus\Storage\Common\Exceptions\IncorrectParameterCast
+ *
+ * @return float|int|string|null
+ *
  */
 function cast(string $key, $value)
 {
-    if(null === $value || true === \is_scalar($value))
+    if (null === $value || true === \is_scalar($value))
     {
         return $value;
     }
 
     /** @psalm-suppress RedundantConditionGivenDocblockType */
-    if(true === \is_object($value))
+    if (true === \is_object($value))
     {
         return castObjectToString($value);
     }
@@ -324,19 +338,20 @@ function cast(string $key, $value)
 }
 
 /**
- * Cast object to string
+ * Cast object to string.
  *
  * @internal
  *
  * @param object $object
  *
+ * @throws \ServiceBus\Storage\Common\Exceptions\IncorrectParameterCast
+ *
  * @return string
  *
- * @throws \ServiceBus\Storage\Common\Exceptions\IncorrectParameterCast
  */
 function castObjectToString(object $object): string
 {
-    if(true === \method_exists($object, '__toString'))
+    if (true === \method_exists($object, '__toString'))
     {
         /** @psalm-suppress InvalidCast Object have __toString method */
         return (string) $object;

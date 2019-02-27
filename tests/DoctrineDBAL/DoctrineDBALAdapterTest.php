@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SQL databases adapters implementation
+ * SQL databases adapters implementation.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -13,12 +13,12 @@ declare(strict_types = 1);
 namespace ServiceBus\Storage\Sql\Tests\DoctrineDBAL;
 
 use function Amp\Promise\wait;
+use function ServiceBus\Storage\Sql\DoctrineDBAL\inMemoryAdapter;
 use ServiceBus\Storage\Common\DatabaseAdapter;
 use ServiceBus\Storage\Common\Exceptions\ConnectionFailed;
 use ServiceBus\Storage\Common\Exceptions\StorageInteractingFailed;
 use ServiceBus\Storage\Common\StorageConfiguration;
 use ServiceBus\Storage\Sql\DoctrineDBAL\DoctrineDBALAdapter;
-use function ServiceBus\Storage\Sql\DoctrineDBAL\inMemoryAdapter;
 use ServiceBus\Storage\Sql\Tests\BaseStorageAdapterTest;
 
 /**
@@ -32,11 +32,11 @@ final class DoctrineDBALAdapterTest extends BaseStorageAdapterTest
     private static $adapter;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected static function getAdapter(): DatabaseAdapter
     {
-        if(null === self::$adapter)
+        if (null === self::$adapter)
         {
             self::$adapter = inMemoryAdapter();
         }
@@ -45,7 +45,7 @@ final class DoctrineDBALAdapterTest extends BaseStorageAdapterTest
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      *
      * @throws \Throwable
      */
@@ -63,9 +63,10 @@ final class DoctrineDBALAdapterTest extends BaseStorageAdapterTest
     /**
      * @test
      *
+     * @throws \Throwable
+     *
      * @return void
      *
-     * @throws \Throwable
      */
     public function lastInsertId(): void
     {
@@ -74,27 +75,28 @@ final class DoctrineDBALAdapterTest extends BaseStorageAdapterTest
         /** @var \ServiceBus\Storage\Common\ResultSet $result */
         $result = wait($adapter->execute('INSERT INTO test_ai (value) VALUES (\'qwerty\')'));
 
-        static::assertEquals('1', wait($result->lastInsertId()));
+        static::assertSame('1', wait($result->lastInsertId()));
 
         /** @var \ServiceBus\Storage\Common\ResultSet $result */
         $result = wait($adapter->execute('INSERT INTO test_ai (value) VALUES (\'qwerty\')'));
 
-        static::assertEquals('2',wait( $result->lastInsertId()));
+        static::assertSame('2', wait($result->lastInsertId()));
     }
 
     /**
      * @test
      *
+     * @throws \Throwable
+     *
      * @return void
      *
-     * @throws \Throwable
      */
     public function failedConnection(): void
     {
         $this->expectException(ConnectionFailed::class);
 
         $adapter = new DoctrineDBALAdapter(
-           new StorageConfiguration('pgsql://localhost:4486/foo?charset=UTF-8')
+            new StorageConfiguration('pgsql://localhost:4486/foo?charset=UTF-8')
         );
 
         wait($adapter->execute('SELECT now()'));
@@ -103,9 +105,10 @@ final class DoctrineDBALAdapterTest extends BaseStorageAdapterTest
     /**
      * @test
      *
+     * @throws \Throwable
+     *
      * @return void
      *
-     * @throws \Throwable
      */
     public function failedConnectionString(): void
     {
