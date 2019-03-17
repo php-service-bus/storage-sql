@@ -111,9 +111,45 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
      *
      * {@inheritdoc}
      */
+    public function transactional(callable $function): Promise
+    {
+        return call(
+            function() use ($function): \Generator
+            {
+                /** @var \ServiceBus\Storage\Common\Transaction $transaction */
+                $transaction = yield $this->transaction();
+
+                try
+                {
+                    /** @var \Generator $generator */
+                    $generator = $function($transaction);
+
+                    yield from $generator;
+
+                    yield $transaction->commit();
+                }
+                catch (\Throwable $throwable)
+                {
+                    yield $transaction->rollback();
+
+                    throw adaptAmpThrowable($throwable);
+                }
+                finally
+                {
+                    unset($transaction);
+                }
+            }
+        );
+    }
+
+    /**
+     * @psalm-suppress MixedTypeCoercion
+     *
+     * {@inheritdoc}
+     */
     public function transaction(): Promise
     {
-        /** @psalm-suppress InvalidArgument  */
+        /** @psalm-suppress InvalidArgument */
         return call(
             function(): \Generator
             {

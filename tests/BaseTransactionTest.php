@@ -21,6 +21,7 @@ use function ServiceBus\Storage\Sql\selectQuery;
 use PHPUnit\Framework\Constraint\IsType;
 use PHPUnit\Framework\TestCase;
 use ServiceBus\Storage\Common\DatabaseAdapter;
+use ServiceBus\Storage\Common\QueryExecutor;
 
 /**
  *
@@ -56,7 +57,6 @@ abstract class BaseTransactionTest extends TestCase
      * @throws \Throwable
      *
      * @return void
-     *
      */
     public function simpleTransaction(): void
     {
@@ -94,7 +94,43 @@ abstract class BaseTransactionTest extends TestCase
      * @throws \Throwable
      *
      * @return void
+     */
+    public function successTransactional(): void
+    {
+        $adapter = static::getAdapter();
+
+        $promise = $adapter->transactional(
+            function(QueryExecutor $executor): \Generator
+            {
+                yield $executor->execute(
+                    'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)',
+                    [
+                        'c072f311-4a0f-4d53-91ea-575b96706eeb', 'value1',
+                        '0e6007d9-5386-40ae-a05c-9decec172d60', 'value2',
+                    ]
+                );
+            }
+        );
+
+        wait($promise);
+
+        /** check results */
+        $result = wait(
+            fetchAll(
+                wait($adapter->execute('SELECT * FROM test_result_set'))
+            )
+        );
+
+        static::assertNotEmpty($result);
+        static::assertCount(2, $result);
+    }
+
+    /**
+     * @test
      *
+     * @throws \Throwable
+     *
+     * @return void
      */
     public function transactionWithReadData(): void
     {
@@ -127,7 +163,6 @@ abstract class BaseTransactionTest extends TestCase
      * @throws \Throwable
      *
      * @return void
-     *
      */
     public function rollback(): void
     {

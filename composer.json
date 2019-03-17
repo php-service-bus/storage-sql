@@ -42,7 +42,7 @@
   "require": {
     "php": ">=7.2",
     "ext-pgsql": "*",
-    "php-service-bus/storage-common": "^v3.0",
+    "php-service-bus/storage-common": "^v3.1",
     "amphp/postgres": "^1",
     "latitude/latitude": "^3.1",
     "psr/log": "1.1.*"

@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "08aad381a7328de7915982c2087dcf89",
-    "content-hash": "5cebb86bcce4c9463aab59cb536cb5e2",
+    "hash": "b7bd3f0c51f3011fc4994c0701fbe65b",
+    "content-hash": "1534163d41d608bc41bf76db17e08500",
     "packages": [
         {
             "name": "amphp/amp",
@@ -326,16 +326,16 @@
         },
         {
             "name": "php-service-bus/storage-common",
-            "version": "v3.0.9",
+            "version": "v3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-service-bus/storage-common.git",
-                "reference": "6815e0f64bb74c5e5bb1d047831f8a21f2551293"
+                "reference": "48eb1fec1e88e5c11fb8030d1f757ec1ff6d16f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-service-bus/storage-common/zipball/6815e0f64bb74c5e5bb1d047831f8a21f2551293",
-                "reference": "6815e0f64bb74c5e5bb1d047831f8a21f2551293",
+                "url": "https://api.github.com/repos/php-service-bus/storage-common/zipball/48eb1fec1e88e5c11fb8030d1f757ec1ff6d16f4",
+                "reference": "48eb1fec1e88e5c11fb8030d1f757ec1ff6d16f4",
                 "shasum": ""
             },
             "require": {
@@ -371,7 +371,7 @@
                 "command-bus",
                 "messaging"
             ],
-            "time": "2019-03-17 18:21:27"
+            "time": "2019-03-17 19:22:54"
         },
         {
             "name": "psr/log",

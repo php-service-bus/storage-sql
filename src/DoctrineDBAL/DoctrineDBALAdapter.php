@@ -12,6 +12,7 @@ declare(strict_types = 1);
 
 namespace ServiceBus\Storage\Sql\DoctrineDBAL;
 
+use function Amp\call;
 use Amp\Failure;
 use Amp\Promise;
 use Amp\Success;
@@ -93,6 +94,42 @@ final class DoctrineDBALAdapter implements DatabaseAdapter
         {
             return new Failure(adaptDbalThrowable($throwable));
         }
+    }
+
+    /**
+     * @psalm-suppress MixedTypeCoercion
+     *
+     * {@inheritdoc}
+     */
+    public function transactional(callable $function): Promise
+    {
+        return call(
+            function() use ($function): \Generator
+            {
+                /** @var \ServiceBus\Storage\Common\Transaction $transaction */
+                $transaction = yield $this->transaction();
+
+                try
+                {
+                    /** @var \Generator $generator */
+                    $generator = $function($transaction);
+
+                    yield from $generator;
+
+                    yield $transaction->commit();
+                }
+                catch (\Throwable $throwable)
+                {
+                    yield $transaction->rollback();
+
+                    throw adaptDbalThrowable($throwable);
+                }
+                finally
+                {
+                    unset($transaction);
+                }
+            }
+        );
     }
 
     /**
