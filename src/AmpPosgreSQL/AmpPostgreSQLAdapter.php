@@ -14,6 +14,7 @@ namespace ServiceBus\Storage\Sql\AmpPosgreSQL;
 
 use function Amp\call;
 use function Amp\Postgres\pool;
+use Amp\Coroutine;
 use Amp\Postgres\ConnectionConfig;
 use Amp\Postgres\Pool;
 use Amp\Promise;
@@ -124,7 +125,7 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
                     /** @var \Generator $generator */
                     $generator = $function($transaction);
 
-                    yield from $generator;
+                    yield new Coroutine($generator);
 
                     yield $transaction->commit();
                 }
