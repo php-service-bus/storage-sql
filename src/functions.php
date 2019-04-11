@@ -18,13 +18,12 @@ use Amp\Promise;
 use Latitude\QueryBuilder\CriteriaInterface;
 use Latitude\QueryBuilder\Engine\PostgresEngine;
 use Latitude\QueryBuilder\EngineInterface;
-use Latitude\QueryBuilder\Query\DeleteQuery;
-use Latitude\QueryBuilder\Query\InsertQuery;
-use Latitude\QueryBuilder\Query\SelectQuery;
-use Latitude\QueryBuilder\Query\UpdateQuery;
+use Latitude\QueryBuilder\Query as LatitudeQuery;
 use Latitude\QueryBuilder\QueryFactory;
+use ServiceBus\Storage\Common\BinaryDataDecoder;
 use ServiceBus\Storage\Common\Exceptions\IncorrectParameterCast;
 use ServiceBus\Storage\Common\Exceptions\OneResultExpected;
+use ServiceBus\Storage\Common\QueryExecutor;
 use ServiceBus\Storage\Common\ResultSet;
 
 /**
@@ -108,6 +107,194 @@ function fetchOne(ResultSet $iterator): Promise
 }
 
 /**
+ * Create & execute SELECT query.
+ *
+ * @psalm-param    array<mixed, \Latitude\QueryBuilder\CriteriaInterface> $criteria
+ * @psalm-param    array<string, string> $orderBy
+ * @psalm-suppress MixedTypeCoercion
+ *
+ * @param QueryExecutor                              $queryExecutor
+ * @param string                                     $tableName
+ * @param \Latitude\QueryBuilder\CriteriaInterface[] $criteria
+ * @param int|null                                   $limit
+ * @param array                                      $orderBy
+ *
+ * @throws \ServiceBus\Storage\Common\Exceptions\ConnectionFailed Could not connect to database
+ * @throws \ServiceBus\Storage\Common\Exceptions\InvalidConfigurationOptions
+ * @throws \ServiceBus\Storage\Common\Exceptions\StorageInteractingFailed Basic type of interaction errors
+ * @throws \ServiceBus\Storage\Common\Exceptions\UniqueConstraintViolationCheckFailed
+ *
+ * @return Promise<\ServiceBus\Storage\Common\ResultSet>
+ */
+function find(QueryExecutor $queryExecutor, string $tableName, array $criteria = [], ?int $limit = null, array $orderBy = []): Promise
+{
+    /**
+     * @psalm-suppress InvalidArgument Incorrect psalm unpack parameters (...$args)
+     * @psalm-suppress MixedArgument
+     */
+    return call(
+        static function(string $tableName, array $criteria, ?int $limit, array $orderBy) use ($queryExecutor): \Generator
+        {
+            /**
+             * @var string $query
+             * @var array  $parameters
+             * @psalm-var array<string, string|int|float|null> $parameters
+             */
+            [$query, $parameters] = buildQuery(selectQuery($tableName), $criteria, $orderBy, $limit);
+
+            /**
+             * @psalm-suppress TooManyTemplateParams Wrong Promise template
+             * @psalm-suppress MixedTypeCoercion Invalid params() docblock
+             */
+            return yield $queryExecutor->execute($query, $parameters);
+        },
+        $tableName,
+        $criteria,
+        $limit,
+        $orderBy
+    );
+}
+
+/**
+ * Create & execute DELETE query.
+ *
+ * @psalm-param array<mixed, \Latitude\QueryBuilder\CriteriaInterface> $criteria
+ * @psalm-suppress MixedTypeCoercion
+ *
+ * @param QueryExecutor                              $queryExecutor
+ * @param string                                     $tableName
+ * @param \Latitude\QueryBuilder\CriteriaInterface[] $criteria
+ *
+ * @throws \ServiceBus\Storage\Common\Exceptions\ConnectionFailed Could not connect to database
+ * @throws \ServiceBus\Storage\Common\Exceptions\InvalidConfigurationOptions
+ * @throws \ServiceBus\Storage\Common\Exceptions\StorageInteractingFailed Basic type of interaction errors
+ * @throws \ServiceBus\Storage\Common\Exceptions\UniqueConstraintViolationCheckFailed
+ * @throws \ServiceBus\Storage\Common\Exceptions\ResultSetIterationFailed
+ *
+ * @return Promise<int>
+ */
+function remove(QueryExecutor $queryExecutor, string $tableName, array $criteria = []): Promise
+{
+    /**
+     * @psalm-suppress InvalidArgument Incorrect psalm unpack parameters (...$args)
+     * @psalm-suppress MixedArgument
+     */
+    return call(
+        static function(string $tableName, array $criteria) use ($queryExecutor): \Generator
+        {
+            /**
+             * @var string $query
+             * @var array  $parameters
+             * @psalm-var array<string, string|int|float|null> $parameters
+             */
+            [$query, $parameters] = buildQuery(deleteQuery($tableName), $criteria);
+
+            /**
+             * @psalm-suppress TooManyTemplateParams Wrong Promise template
+             * @psalm-suppress MixedTypeCoercion Invalid params() docblock
+             *
+             * @var \ServiceBus\Storage\Common\ResultSet $resultSet
+             */
+            $resultSet = yield $queryExecutor->execute($query, $parameters);
+
+            $affectedRows = $resultSet->affectedRows();
+
+            unset($resultSet);
+
+            return $affectedRows;
+        },
+        $tableName,
+        $criteria
+    );
+}
+
+/**
+ * Create query from specified parameters.
+ *
+ * @psalm-param array<mixed, \Latitude\QueryBuilder\CriteriaInterface> $criteria
+ * @psalm-param array<string, string>                                  $orderBy
+ *
+ * @param LatitudeQuery\AbstractQuery                $queryBuilder
+ * @param \Latitude\QueryBuilder\CriteriaInterface[] $criteria
+ * @param array                                      $orderBy
+ * @param int|null                                   $limit
+ *
+ * @return array 0 - SQL query; 1 - query parameters
+ */
+function buildQuery(
+    LatitudeQuery\AbstractQuery $queryBuilder,
+    array $criteria = [],
+    array $orderBy = [],
+    ?int $limit = null
+): array {
+    /** @var LatitudeQuery\DeleteQuery|LatitudeQuery\SelectQuery|LatitudeQuery\UpdateQuery $queryBuilder */
+    $isFirstCondition = true;
+
+    /** @var \Latitude\QueryBuilder\CriteriaInterface $criteriaItem */
+    foreach ($criteria as $criteriaItem)
+    {
+        $methodName = true === $isFirstCondition ? 'where' : 'andWhere';
+        $queryBuilder->{$methodName}($criteriaItem);
+        $isFirstCondition = false;
+    }
+
+    if ($queryBuilder instanceof LatitudeQuery\SelectQuery)
+    {
+        foreach ($orderBy as $column => $direction)
+        {
+            $queryBuilder->orderBy($column, $direction);
+        }
+
+        if (null !== $limit)
+        {
+            $queryBuilder->limit($limit);
+        }
+    }
+
+    $compiledQuery = $queryBuilder->compile();
+
+    return [
+        $compiledQuery->sql(),
+        $compiledQuery->params(),
+    ];
+}
+
+/**
+ * Unescape binary data.
+ *
+ * @psalm-param  array<string, string|int|null|float>|string $data
+ *
+ * @psalm-return array<string, string|int|null|float>|string
+ *
+ * @param QueryExecutor $queryExecutor
+ * @param array|string  $data
+ *
+ * @return array|string
+ */
+function unescapeBinary(QueryExecutor $queryExecutor, $data)
+{
+    if ($queryExecutor instanceof BinaryDataDecoder)
+    {
+        if (false === \is_array($data))
+        {
+            return $queryExecutor->unescapeBinary((string) $data);
+        }
+
+        foreach ($data as $key => $value)
+        {
+            if (false === empty($value) && true === \is_string($value))
+            {
+                $data[$key] = $queryExecutor->unescapeBinary($value);
+            }
+        }
+    }
+
+    return $data;
+}
+
+/**
+ * Create equals criteria.
+ *
  * @param string                  $field
  * @param float|int|object|string $value
  *
@@ -126,6 +313,8 @@ function equalsCriteria(string $field, $value): CriteriaInterface
 }
 
 /**
+ * Create not equals criteria.
+ *
  * @param string                  $field
  * @param float|int|object|string $value
  *
@@ -163,9 +352,9 @@ function queryBuilder(EngineInterface $engine = null): QueryFactory
  * @param string $fromTable
  * @param string ...$columns
  *
- * @return SelectQuery
+ * @return LatitudeQuery\SelectQuery
  */
-function selectQuery(string $fromTable, string ...$columns): SelectQuery
+function selectQuery(string $fromTable, string ...$columns): LatitudeQuery\SelectQuery
 {
     return queryBuilder()->select(...$columns)->from($fromTable);
 }
@@ -180,9 +369,9 @@ function selectQuery(string $fromTable, string ...$columns): SelectQuery
  *
  * @throws \ServiceBus\Storage\Common\Exceptions\IncorrectParameterCast
  *
- * @return UpdateQuery
+ * @return LatitudeQuery\UpdateQuery
  */
-function updateQuery(string $tableName, $toUpdate): UpdateQuery
+function updateQuery(string $tableName, $toUpdate): LatitudeQuery\UpdateQuery
 {
     $values = true === \is_object($toUpdate) ? castObjectToArray($toUpdate) : $toUpdate;
 
@@ -194,9 +383,9 @@ function updateQuery(string $tableName, $toUpdate): UpdateQuery
  *
  * @param string $fromTable
  *
- * @return DeleteQuery
+ * @return LatitudeQuery\DeleteQuery
  */
-function deleteQuery(string $fromTable): DeleteQuery
+function deleteQuery(string $fromTable): LatitudeQuery\DeleteQuery
 {
     return queryBuilder()->delete($fromTable);
 }
@@ -211,9 +400,9 @@ function deleteQuery(string $fromTable): DeleteQuery
  *
  * @throws \ServiceBus\Storage\Common\Exceptions\IncorrectParameterCast
  *
- * @return InsertQuery
+ * @return LatitudeQuery\InsertQuery
  */
-function insertQuery(string $toTable, $toInsert): InsertQuery
+function insertQuery(string $toTable, $toInsert): LatitudeQuery\InsertQuery
 {
     $rows = true === \is_object($toInsert) ? castObjectToArray($toInsert) : $toInsert;
 

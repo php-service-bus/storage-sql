@@ -12,6 +12,7 @@ declare(strict_types = 1);
 
 namespace ServiceBus\Storage\Sql\Tests;
 
+use function ServiceBus\Storage\Sql\buildQuery;
 use function ServiceBus\Storage\Sql\cast;
 use function ServiceBus\Storage\Sql\deleteQuery;
 use function ServiceBus\Storage\Sql\equalsCriteria;
@@ -33,7 +34,34 @@ final class QueryBuilderFunctionsTest extends TestCase
      * @throws \Throwable
      *
      * @return void
+     */
+    public function buildQuery(): void
+    {
+        $parts = buildQuery(
+            selectQuery('table_name'),
+            [equalsCriteria('id', 100), notEqualsCriteria('id', 200)],
+            ['title' => 'desc'],
+            100
+        );
+
+        static::assertCount(2, $parts);
+        static::assertArrayHasKey(0, $parts);
+        static::assertArrayHasKey(1, $parts);
+
+        static::assertSame(
+            'SELECT * FROM "table_name" WHERE "id" = ? AND "id" != ? ORDER BY "title" DESC LIMIT 100',
+            $parts[0]
+        );
+
+        static::assertSame([100, 200], $parts[1]);
+    }
+
+    /**
+     * @test
      *
+     * @throws \Throwable
+     *
+     * @return void
      */
     public function selectQuery(): void
     {
@@ -55,7 +83,6 @@ final class QueryBuilderFunctionsTest extends TestCase
      * @throws \Throwable
      *
      * @return void
-     *
      */
     public function updateQuery(): void
     {
@@ -77,7 +104,6 @@ final class QueryBuilderFunctionsTest extends TestCase
      * @throws \Throwable
      *
      * @return void
-     *
      */
     public function deleteQuery(): void
     {
@@ -93,7 +119,6 @@ final class QueryBuilderFunctionsTest extends TestCase
      * @throws \Throwable
      *
      * @return void
-     *
      */
     public function insertQueryFromObject(): void
     {
@@ -132,7 +157,6 @@ final class QueryBuilderFunctionsTest extends TestCase
      * @throws \Throwable
      *
      * @return void
-     *
      */
     public function insertQueryFromArray(): void
     {
@@ -152,7 +176,6 @@ final class QueryBuilderFunctionsTest extends TestCase
      * @throws \Throwable
      *
      * @return void
-     *
      */
     public function toSnakeCase(): void
     {
@@ -168,7 +191,6 @@ final class QueryBuilderFunctionsTest extends TestCase
      * @throws \Throwable
      *
      * @return void
-     *
      */
     public function castNonScalarType(): void
     {
@@ -185,7 +207,6 @@ final class QueryBuilderFunctionsTest extends TestCase
      * @throws \Throwable
      *
      * @return void
-     *
      */
     public function castObjectWithoutToString(): void
     {
@@ -206,7 +227,6 @@ final class QueryBuilderFunctionsTest extends TestCase
      * @throws \Throwable
      *
      * @return void
-     *
      */
     public function castObjectWithToString(): void
     {
@@ -227,7 +247,6 @@ final class QueryBuilderFunctionsTest extends TestCase
      * @throws \Throwable
      *
      * @return void
-     *
      */
     public function objectNotEqualsCriteria(): void
     {
@@ -259,7 +278,6 @@ final class QueryBuilderFunctionsTest extends TestCase
      * @throws \Throwable
      *
      * @return void
-     *
      */
     public function scalarNotEqualsCriteria(): void
     {

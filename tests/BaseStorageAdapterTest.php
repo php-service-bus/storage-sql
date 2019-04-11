@@ -13,8 +13,12 @@ declare(strict_types = 1);
 namespace ServiceBus\Storage\Sql\Tests;
 
 use function Amp\Promise\wait;
+use function ServiceBus\Storage\Sql\equalsCriteria;
 use function ServiceBus\Storage\Sql\fetchAll;
 use function ServiceBus\Storage\Sql\fetchOne;
+use function ServiceBus\Storage\Sql\find;
+use function ServiceBus\Storage\Sql\remove;
+use function ServiceBus\Storage\Sql\unescapeBinary;
 use Amp\Promise;
 use PHPUnit\Framework\TestCase;
 use ServiceBus\Storage\Common\DatabaseAdapter;
@@ -91,12 +95,12 @@ abstract class BaseStorageAdapterTest extends TestCase
         wait($promise);
 
         /** @var \ServiceBus\Storage\Common\ResultSet $iterator */
-        $iterator = wait($adapter->execute('SELECT * from storage_test_table WHERE id = ?', ['77961031-fd0f-4946-b439-dfc2902b961a']));
+        $iterator = wait(find($adapter, 'storage_test_table', [equalsCriteria('id', '77961031-fd0f-4946-b439-dfc2902b961a')]));
         $result   = wait(fetchAll($iterator));
 
         /** @noinspection StaticInvocationViaThisInspection */
         static::assertCount(1, $result);
-        static::assertSame($data, $adapter->unescapeBinary($result[0]['payload']));
+        static::assertSame($data, unescapeBinary($adapter, $result[0]['payload']));
     }
 
     /**
@@ -152,7 +156,7 @@ abstract class BaseStorageAdapterTest extends TestCase
     {
         $this->expectException(StorageInteractingFailed::class);
 
-        wait(static::getAdapter()->execute('SELECT abube from storage_test_table'));
+        wait(find(static::getAdapter(), 'asegfseg'));
     }
 
     /**
@@ -192,7 +196,6 @@ abstract class BaseStorageAdapterTest extends TestCase
      * @throws \Throwable
      *
      * @return void
-     *
      */
     public function findOneWhenEmptySet(): void
     {
@@ -218,7 +221,6 @@ abstract class BaseStorageAdapterTest extends TestCase
      * @throws \Throwable
      *
      * @return void
-     *
      */
     public function findOneWhenWrongSet(): void
     {
@@ -241,7 +243,6 @@ abstract class BaseStorageAdapterTest extends TestCase
      * @throws \Throwable
      *
      * @return void
-     *
      */
     public function uniqueKeyCheckFailed(): void
     {
@@ -266,7 +267,6 @@ abstract class BaseStorageAdapterTest extends TestCase
      * @throws \Throwable
      *
      * @return void
-     *
      */
     public function rowsCount(): void
     {
@@ -298,12 +298,12 @@ abstract class BaseStorageAdapterTest extends TestCase
 
         unset($result);
 
-        wait($adapter->execute('DELETE FROM storage_test_table'));
+        wait(remove($adapter, 'storage_test_table'));
 
-        /** @var \ServiceBus\Storage\Common\ResultSet $result */
-        $result = wait($adapter->execute('DELETE FROM storage_test_table'));
+        /** @var int $result */
+        $result = wait(remove($adapter, 'storage_test_table'));
 
-        static::assertSame(0, $result->affectedRows());
+        static::assertSame(0, $result);
 
         unset($result);
 
@@ -325,7 +325,6 @@ abstract class BaseStorageAdapterTest extends TestCase
      * @throws \Throwable
      *
      * @return Promise
-     *
      */
     private static function importFixtures(DatabaseAdapter $adapter): Promise
     {
