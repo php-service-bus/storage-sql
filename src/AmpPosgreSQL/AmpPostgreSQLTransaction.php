@@ -76,7 +76,7 @@ final class AmpPostgreSQLTransaction implements Transaction
 
                    /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
                    return new AmpPostgreSQLResultSet(
-                        yield $transaction->execute($queryString, $parameters)
+                       yield $transaction->execute($queryString, $parameters)
                     );
                }
                // @codeCoverageIgnoreStart
@@ -99,10 +99,7 @@ final class AmpPostgreSQLTransaction implements Transaction
         $transaction = $this->transaction;
         $logger = $this->logger;
 
-        /**
-         * @psalm-suppress InvalidArgument
-         * @psalm-suppress MixedTypeCoercion
-         */
+        /** @psalm-suppress MixedTypeCoercion */
         return call(
             static function() use ($transaction, $logger): \Generator
             {
@@ -133,10 +130,7 @@ final class AmpPostgreSQLTransaction implements Transaction
         $transaction = $this->transaction;
         $logger = $this->logger;
 
-        /**
-         * @psalm-suppress InvalidArgument
-         * @psalm-suppress MixedTypeCoercion
-         */
+        /** @psalm-suppress MixedTypeCoercion */
         return call(
             static function() use ($transaction, $logger): \Generator
             {
