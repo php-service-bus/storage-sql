@@ -57,7 +57,7 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
     public function __construct(StorageConfiguration $configuration, ?LoggerInterface $logger = null)
     {
         // @codeCoverageIgnoreStart
-        if(false === \extension_loaded('pgsql'))
+        if (false === \extension_loaded('pgsql'))
         {
             throw new InvalidConfigurationOptions('ext-pgsql must be installed');
         }
@@ -70,7 +70,7 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
     public function __destruct()
     {
         /** @psalm-suppress RedundantConditionGivenDocblockType Null in case of error */
-        if(null !== $this->pool)
+        if (null !== $this->pool)
         {
             $this->pool->close();
         }
@@ -100,12 +100,13 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
                         yield $pool->execute($queryString, $parameters)
                     );
                 }
-                catch(\Throwable $throwable)
+                catch (\Throwable $throwable)
                 {
                     throw adaptAmpThrowable($throwable);
                 }
             },
-            $queryString, $parameters
+            $queryString,
+            $parameters
         );
     }
 
@@ -123,11 +124,14 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
             static function() use ($pool, $logger, $function): \Generator
             {
                 /**
-                 * @psalm-suppress TooManyTemplateParams Wrong Promise template
+                 * @psalm-suppress TooManyTemplateParams
                  *
-                 * @var \Amp\Postgres\Transaction $transaction
+                 * @var \Amp\Postgres\Transaction $originalTransaction
                  */
-                $transaction = new AmpPostgreSQLTransaction(yield $pool->beginTransaction(), $logger);
+                $originalTransaction = yield $pool->beginTransaction();
+
+                /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
+                $transaction = new AmpPostgreSQLTransaction($originalTransaction, $logger);
 
                 $logger->debug('BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED');
 
@@ -138,10 +142,12 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
 
                     yield new Coroutine($generator);
 
+                    /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
                     yield $transaction->commit();
                 }
-                catch(\Throwable $throwable)
+                catch (\Throwable $throwable)
                 {
+                    /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
                     yield $transaction->rollback();
 
                     throw adaptAmpThrowable($throwable);
@@ -181,8 +187,8 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
 
                     return new AmpPostgreSQLTransaction($transaction, $logger);
                 }
-                    // @codeCoverageIgnoreStart
-                catch(\Throwable $throwable)
+                // @codeCoverageIgnoreStart
+                catch (\Throwable $throwable)
                 {
                     throw adaptAmpThrowable($throwable);
                 }
@@ -196,7 +202,7 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
      */
     public function unescapeBinary($payload): string
     {
-        if(true === \is_resource($payload))
+        if (true === \is_resource($payload))
         {
             $payload = \stream_get_contents($payload, -1, 0);
         }
@@ -211,7 +217,7 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
      */
     private function pool(): Pool
     {
-        if(null === $this->pool)
+        if (null === $this->pool)
         {
             $queryData = $this->configuration->queryParameters;
 

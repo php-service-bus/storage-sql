@@ -69,23 +69,23 @@ final class AmpPostgreSQLTransaction implements Transaction
         return call(
         /** @psalm-return AmpPostgreSQLResultSet */
            static function(string $queryString, array $parameters = []) use ($transaction, $logger): \Generator
-            {
-                try
-                {
-                    $logger->debug($queryString, $parameters);
+           {
+               try
+               {
+                   $logger->debug($queryString, $parameters);
 
-                    /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
-                    return new AmpPostgreSQLResultSet(
+                   /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
+                   return new AmpPostgreSQLResultSet(
                         yield $transaction->execute($queryString, $parameters)
                     );
-                }
-                // @codeCoverageIgnoreStart
-                catch (\Throwable $throwable)
-                {
-                    throw adaptAmpThrowable($throwable);
-                }
-                // @codeCoverageIgnoreEnd
-            },
+               }
+               // @codeCoverageIgnoreStart
+               catch (\Throwable $throwable)
+               {
+                   throw adaptAmpThrowable($throwable);
+               }
+               // @codeCoverageIgnoreEnd
+           },
             $queryString,
             $parameters
         );
@@ -104,7 +104,7 @@ final class AmpPostgreSQLTransaction implements Transaction
          * @psalm-suppress MixedTypeCoercion
          */
         return call(
-           static function() use ($transaction, $logger): \Generator
+            static function() use ($transaction, $logger): \Generator
             {
                 try
                 {
@@ -138,7 +138,7 @@ final class AmpPostgreSQLTransaction implements Transaction
          * @psalm-suppress MixedTypeCoercion
          */
         return call(
-           static function() use ($transaction, $logger): \Generator
+            static function() use ($transaction, $logger): \Generator
             {
                 try
                 {
