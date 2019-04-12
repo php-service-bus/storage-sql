@@ -150,7 +150,7 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
                     /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
                     yield $transaction->rollback();
 
-                    throw adaptAmpThrowable($throwable);
+                    throw $throwable;
                 }
                 finally
                 {

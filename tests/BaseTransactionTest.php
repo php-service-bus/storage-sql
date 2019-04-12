@@ -14,6 +14,8 @@ namespace ServiceBus\Storage\Sql\Tests;
 
 use function Amp\call;
 use function Amp\Promise\wait;
+use ServiceBus\Storage\Common\Exceptions\UniqueConstraintViolationCheckFailed;
+use ServiceBus\Storage\Common\Transaction;
 use function ServiceBus\Storage\Sql\equalsCriteria;
 use function ServiceBus\Storage\Sql\fetchAll;
 use function ServiceBus\Storage\Sql\fetchOne;
@@ -200,6 +202,39 @@ abstract class BaseTransactionTest extends TestCase
 
                     static::assertThat($collection, new IsType('array'));
                     static::assertCount(0, $collection);
+                }
+            )
+        );
+    }
+
+    /**
+     * @test
+     *
+     * @throws \Throwable
+     *
+     * @return void
+     */
+    public function transactionalWithDuplicate(): void
+    {
+        $this->expectException(UniqueConstraintViolationCheckFailed::class);
+
+        $adapter = static::getAdapter();
+
+        wait(
+            call(
+                static function() use ($adapter): \Generator
+                {
+                    yield $adapter->transactional(
+                        static function(Transaction $transaction): \Generator
+                        {
+                            $uuid = 'cb9f20de-6a8e-4934-84b4-71da78e42697';
+
+                            $query = insertQuery('test_result_set', ['id' => $uuid, 'value' => 'value2'])->compile();
+
+                            yield $transaction->execute($query->sql(), $query->params());
+                            yield $transaction->execute($query->sql(), $query->params());
+                        }
+                    );
                 }
             )
         );

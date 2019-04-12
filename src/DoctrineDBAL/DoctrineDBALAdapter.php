@@ -122,7 +122,7 @@ final class DoctrineDBALAdapter implements DatabaseAdapter
                 {
                     yield $transaction->rollback();
 
-                    throw adaptDbalThrowable($throwable);
+                    throw $throwable;
                 }
                 finally
                 {
