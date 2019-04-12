@@ -28,7 +28,7 @@ final class DoctrineDBALResultSet implements ResultSet
      *
      * @psalm-var array<array-key, string|int|float|resource|null>|null
      *
-     * @var array
+     * @var array|null
      */
     private $currentRow;
 

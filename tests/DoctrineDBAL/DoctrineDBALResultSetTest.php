@@ -189,7 +189,7 @@ final class DoctrineDBALResultSetTest extends TestCase
                     /** @var \ServiceBus\Storage\Common\ResultSet $result */
                     $result = yield $adapter->execute('SELECT * FROM test_result_set');
 
-                    while(yield $result->advance())
+                    while (yield $result->advance())
                     {
                         $row     = $result->getCurrent();
                         $rowCopy = $result->getCurrent();

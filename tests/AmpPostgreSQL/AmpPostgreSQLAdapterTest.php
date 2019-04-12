@@ -65,9 +65,8 @@ final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
 
             self::$adapter = null;
         }
-        catch(\Throwable $throwable)
+        catch (\Throwable $throwable)
         {
-
         }
     }
 
@@ -92,7 +91,7 @@ final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
      */
     protected static function getAdapter(): DatabaseAdapter
     {
-        if(null === self::$adapter)
+        if (null === self::$adapter)
         {
             self::$adapter = postgreSqlAdapterFactory((string) \getenv('TEST_POSTGRES_DSN'));
         }
@@ -114,7 +113,7 @@ final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
 
         wait(
             call(
-               static function() use ($adapter): \Generator
+                static function() use ($adapter): \Generator
                 {
                     /** @var \ServiceBus\Storage\Common\ResultSet $result */
                     $result = yield $adapter->execute('INSERT INTO test_ai (value) VALUES (\'qwerty\') RETURNING id');

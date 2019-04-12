@@ -28,7 +28,7 @@ use ServiceBus\Storage\Common\ResultSet;
 class AmpPostgreSQLResultSet implements ResultSet
 {
     /**
-     * @var AmpResultSet|PooledResultSet
+     * @var AmpResultSet|PgSqlCommandResult|PooledResultSet|PqCommandResult
      */
     private $originalResultSet;
 
@@ -42,7 +42,7 @@ class AmpPostgreSQLResultSet implements ResultSet
      *
      * @psalm-suppress TypeCoercion Assume a different data type
      *
-     * @param AmpResultSet|PooledResultSet $originalResultSet
+     * @param AmpResultSet|PgSqlCommandResult|PooledResultSet|PqCommandResult $originalResultSet
      */
     public function __construct(object $originalResultSet)
     {
@@ -83,6 +83,13 @@ class AmpPostgreSQLResultSet implements ResultSet
     {
         try
         {
+            if (
+                $this->originalResultSet instanceof PgSqlCommandResult ||
+                $this->originalResultSet instanceof PqCommandResult
+            ) {
+                return null;
+            }
+
             /** @var array<string, float|int|resource|string|null>|null $data */
             $data = $this->originalResultSet->getCurrent();
 

@@ -66,9 +66,8 @@ final class AmpPostgreSQLResultSetTest extends TestCase
 
             self::$adapter = null;
         }
-        catch(\Throwable $throwable)
+        catch (\Throwable $throwable)
         {
-
         }
     }
 
@@ -211,7 +210,7 @@ final class AmpPostgreSQLResultSetTest extends TestCase
                     /** @var \ServiceBus\Storage\Common\ResultSet $result */
                     $result = yield self::$adapter->execute('SELECT * FROM test_result_set');
 
-                    while(yield $result->advance())
+                    while (yield $result->advance())
                     {
                         $row     = $result->getCurrent();
                         $rowCopy = $result->getCurrent();
@@ -240,7 +239,7 @@ final class AmpPostgreSQLResultSetTest extends TestCase
                     /** @var \ServiceBus\Storage\Common\ResultSet $result */
                     $result = yield self::$adapter->execute('DELETE FROM test_result_set');
 
-                    while(yield $result->advance())
+                    while (yield $result->advance())
                     {
                         static::fail('Non empty cycle');
                     }
