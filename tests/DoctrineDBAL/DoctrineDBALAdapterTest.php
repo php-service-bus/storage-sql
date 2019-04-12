@@ -12,6 +12,7 @@ declare(strict_types = 1);
 
 namespace ServiceBus\Storage\Sql\Tests\DoctrineDBAL;
 
+use function Amp\call;
 use function Amp\Promise\wait;
 use function ServiceBus\Storage\Sql\DoctrineDBAL\inMemoryAdapter;
 use ServiceBus\Storage\Common\DatabaseAdapter;
@@ -36,7 +37,7 @@ final class DoctrineDBALAdapterTest extends BaseStorageAdapterTest
      */
     protected static function getAdapter(): DatabaseAdapter
     {
-        if (null === self::$adapter)
+        if(null === self::$adapter)
         {
             self::$adapter = inMemoryAdapter();
         }
@@ -72,15 +73,22 @@ final class DoctrineDBALAdapterTest extends BaseStorageAdapterTest
     {
         $adapter = static::getAdapter();
 
-        /** @var \ServiceBus\Storage\Common\ResultSet $result */
-        $result = wait($adapter->execute('INSERT INTO test_ai (value) VALUES (\'qwerty\')'));
+        wait(
+            call(
+                static function() use ($adapter): \Generator
+                {
+                    /** @var \ServiceBus\Storage\Common\ResultSet $result */
+                    $result = yield $adapter->execute('INSERT INTO test_ai (value) VALUES (\'qwerty\')');
 
-        static::assertSame('1', wait($result->lastInsertId()));
+                    static::assertSame('1', yield $result->lastInsertId());
 
-        /** @var \ServiceBus\Storage\Common\ResultSet $result */
-        $result = wait($adapter->execute('INSERT INTO test_ai (value) VALUES (\'qwerty\')'));
+                    /** @var \ServiceBus\Storage\Common\ResultSet $result */
+                    $result = yield $adapter->execute('INSERT INTO test_ai (value) VALUES (\'qwerty\')');
 
-        static::assertSame('2', wait($result->lastInsertId()));
+                    static::assertSame('2', yield $result->lastInsertId());
+                }
+            )
+        );
     }
 
     /**
@@ -99,7 +107,14 @@ final class DoctrineDBALAdapterTest extends BaseStorageAdapterTest
             new StorageConfiguration('pgsql://localhost:4486/foo?charset=UTF-8')
         );
 
-        wait($adapter->execute('SELECT now()'));
+        wait(
+            call(
+                static function() use ($adapter): \Generator
+                {
+                    yield $adapter->execute('SELECT now()');
+                }
+            )
+        );
     }
 
     /**
@@ -118,6 +133,13 @@ final class DoctrineDBALAdapterTest extends BaseStorageAdapterTest
             new StorageConfiguration('')
         );
 
-        wait($adapter->execute('SELECT now()'));
+        wait(
+            call(
+                static function() use ($adapter): \Generator
+                {
+                    yield $adapter->execute('SELECT now()');
+                }
+            )
+        );
     }
 }

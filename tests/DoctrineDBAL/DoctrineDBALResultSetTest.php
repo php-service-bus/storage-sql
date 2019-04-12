@@ -12,6 +12,7 @@ declare(strict_types = 1);
 
 namespace ServiceBus\Storage\Sql\Tests\DoctrineDBAL;
 
+use function Amp\call;
 use function Amp\Promise\wait;
 use function ServiceBus\Storage\Sql\DoctrineDBAL\inMemoryAdapter;
 use function ServiceBus\Storage\Sql\fetchAll;
@@ -72,32 +73,35 @@ final class DoctrineDBALResultSetTest extends TestCase
      */
     public function fetchOne(): void
     {
-        $promise = $this->adapter->execute(
-            'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)',
-            [
-                'uuid1', 'value1',
-                'uuid2', 'value2',
-            ]
-        );
+        $adapter = $this->adapter;
 
-        wait($promise);
+        wait(
+            call(
+                static function() use ($adapter): \Generator
+                {
+                    yield $adapter->execute(
+                        'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)',
+                        [
+                            'uuid1', 'value1',
+                            'uuid2', 'value2',
+                        ]
+                    );
 
-        $result = wait(
-            fetchOne(
-                wait($this->adapter->execute('SELECT * FROM test_result_set WHERE id = \'uuid2\''))
+                    $result = yield fetchOne(
+                        yield $adapter->execute('SELECT * FROM test_result_set WHERE id = \'uuid2\'')
+                    );
+
+                    static::assertNotEmpty($result);
+                    static:: assertSame(['id' => 'uuid2', 'value' => 'value2'], $result);
+
+                    $result = yield fetchOne(
+                        yield $adapter->execute('SELECT * FROM test_result_set WHERE id = \'uuid4\'')
+                    );
+
+                    static::assertNull($result);
+                }
             )
         );
-
-        static::assertNotEmpty($result);
-        static:: assertSame(['id' => 'uuid2', 'value' => 'value2'], $result);
-
-        $result = wait(
-            fetchOne(
-                wait($this->adapter->execute('SELECT * FROM test_result_set WHERE id = \'uuid4\''))
-            )
-        );
-
-        static::assertNull($result);
     }
 
     /**
@@ -110,24 +114,27 @@ final class DoctrineDBALResultSetTest extends TestCase
      */
     public function fetchAll(): void
     {
-        $promise = $this->adapter->execute(
-            'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)',
-            [
-                'uuid1', 'value1',
-                'uuid2', 'value2',
-            ]
-        );
+        $adapter = $this->adapter;
 
-        wait($promise);
+        wait(
+            call(
+                static function() use ($adapter): \Generator
+                {
+                    yield $adapter->execute(
+                        'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)',
+                        [
+                            'uuid1', 'value1',
+                            'uuid2', 'value2',
+                        ]
+                    );
 
-        $result = wait(
-            fetchAll(
-                wait($this->adapter->execute('SELECT * FROM test_result_set'))
+                    $result = yield fetchAll(yield $adapter->execute('SELECT * FROM test_result_set'));
+
+                    static::assertNotEmpty($result);
+                    static::assertCount(2, $result);
+                }
             )
         );
-
-        static::assertNotEmpty($result);
-        static::assertCount(2, $result);
     }
 
     /**
@@ -140,14 +147,19 @@ final class DoctrineDBALResultSetTest extends TestCase
      */
     public function fetchAllWithEmptySet(): void
     {
-        $result = wait(
-            fetchAll(
-                wait($this->adapter->execute('SELECT * FROM test_result_set'))
+        $adapter = $this->adapter;
+
+        wait(
+            call(
+                static function() use ($adapter): \Generator
+                {
+                    $result = yield fetchAll(yield $adapter->execute('SELECT * FROM test_result_set'));
+
+                    static::assertThat($result, new IsType('array'));
+                    static::assertEmpty($result);
+                }
             )
         );
-
-        static::assertThat($result, new IsType('array'));
-        static::assertEmpty($result);
     }
 
     /**
@@ -160,25 +172,32 @@ final class DoctrineDBALResultSetTest extends TestCase
      */
     public function multipleGetCurrentRow(): void
     {
-        $promise = $this->adapter->execute(
-            'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)',
-            [
-                'uuid1', 'value1',
-                'uuid2', 'value2',
-            ]
+        $adapter = $this->adapter;
+
+        wait(
+            call(
+                static function() use ($adapter): \Generator
+                {
+                    yield $adapter->execute(
+                        'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)',
+                        [
+                            'uuid1', 'value1',
+                            'uuid2', 'value2',
+                        ]
+                    );
+
+                    /** @var \ServiceBus\Storage\Common\ResultSet $result */
+                    $result = yield $adapter->execute('SELECT * FROM test_result_set');
+
+                    while(yield $result->advance())
+                    {
+                        $row     = $result->getCurrent();
+                        $rowCopy = $result->getCurrent();
+
+                        static::assertSame($row, $rowCopy);
+                    }
+                }
+            )
         );
-
-        wait($promise);
-
-        /** @var \ServiceBus\Storage\Common\ResultSet $result */
-        $result = wait($this->adapter->execute('SELECT * FROM test_result_set'));
-
-        while (wait($result->advance()))
-        {
-            $row     = $result->getCurrent();
-            $rowCopy = $result->getCurrent();
-
-            static::assertSame($row, $rowCopy);
-        }
     }
 }

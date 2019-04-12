@@ -12,6 +12,7 @@ declare(strict_types = 1);
 
 namespace ServiceBus\Storage\Sql\Tests\AmpPostgreSQL;
 
+use function Amp\call;
 use function Amp\Promise\wait;
 use function ServiceBus\Storage\Sql\AmpPosgreSQL\postgreSqlAdapterFactory;
 use ServiceBus\Storage\Common\DatabaseAdapter;
@@ -57,10 +58,31 @@ final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
     {
         $adapter = static::getAdapter();
 
-        wait($adapter->execute('DROP TABLE storage_test_table'));
-        wait($adapter->execute('DROP TABLE test_ai'));
+        try
+        {
+            wait($adapter->execute('DROP TABLE storage_test_table'));
+            wait($adapter->execute('DROP TABLE test_ai'));
 
-        self::$adapter = null;
+            self::$adapter = null;
+        }
+        catch(\Throwable $throwable)
+        {
+
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @throws \Throwable
+     */
+    protected function tearDown(): void
+    {
+        $adapter = static::getAdapter();
+
+        wait($adapter->execute('TRUNCATE TABLE test_ai'));
+
+        parent::tearDown();
     }
 
     /**
@@ -70,7 +92,7 @@ final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
      */
     protected static function getAdapter(): DatabaseAdapter
     {
-        if (null === self::$adapter)
+        if(null === self::$adapter)
         {
             self::$adapter = postgreSqlAdapterFactory((string) \getenv('TEST_POSTGRES_DSN'));
         }
@@ -90,15 +112,22 @@ final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
     {
         $adapter = static::getAdapter();
 
-        /** @var \ServiceBus\Storage\Common\ResultSet $result */
-        $result = wait($adapter->execute('INSERT INTO test_ai (value) VALUES (\'qwerty\') RETURNING id'));
+        wait(
+            call(
+               static function() use ($adapter): \Generator
+                {
+                    /** @var \ServiceBus\Storage\Common\ResultSet $result */
+                    $result = yield $adapter->execute('INSERT INTO test_ai (value) VALUES (\'qwerty\') RETURNING id');
 
-        static::assertSame('1', wait($result->lastInsertId()));
+                    static::assertSame('1', yield $result->lastInsertId());
 
-        /** @var \ServiceBus\Storage\Common\ResultSet $result */
-        $result = wait($adapter->execute('INSERT INTO test_ai (value) VALUES (\'qwerty\') RETURNING id'));
+                    /** @var \ServiceBus\Storage\Common\ResultSet $result */
+                    $result = yield $adapter->execute('INSERT INTO test_ai (value) VALUES (\'qwerty\') RETURNING id');
 
-        static::assertSame('2', wait($result->lastInsertId()));
+                    static::assertSame('2', yield $result->lastInsertId());
+                }
+            )
+        );
     }
 
     /**
@@ -117,6 +146,13 @@ final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
             new StorageConfiguration('qwerty')
         );
 
-        wait($adapter->execute('SELECT now()'));
+        wait(
+            call(
+                static function() use ($adapter): \Generator
+                {
+                    yield $adapter->execute('SELECT now()');
+                }
+            )
+        );
     }
 }
