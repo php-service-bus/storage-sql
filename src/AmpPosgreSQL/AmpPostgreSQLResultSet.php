@@ -35,7 +35,7 @@ class AmpPostgreSQLResultSet implements ResultSet
     /**
      * @var bool
      */
-    private static $advanceCalled = false;
+    private $advanceCalled = false;
 
     /**
      * @noinspection   PhpDocSignatureInspection
@@ -56,7 +56,7 @@ class AmpPostgreSQLResultSet implements ResultSet
      */
     public function advance(): Promise
     {
-        self::$advanceCalled = true;
+        $this->advanceCalled = true;
 
         try
         {
@@ -110,26 +110,24 @@ class AmpPostgreSQLResultSet implements ResultSet
      */
     public function lastInsertId(?string $sequence = null): Promise
     {
-        $resultSet = $this->originalResultSet;
-
         /** @psalm-suppress InvalidArgument */
         return call(
-            static function() use ($resultSet): \Generator
+            function(): \Generator
             {
                 try
                 {
-                    if ($resultSet instanceof PooledResultSet)
+                    if ($this->originalResultSet instanceof PooledResultSet)
                     {
-                        if (false === self::$advanceCalled)
+                        if (false === $this->advanceCalled)
                         {
                             /** @psalm-suppress TooManyTemplateParams Invalid Promise template */
-                            yield $resultSet->advance();
+                            yield $this->originalResultSet->advance();
 
-                            self::$advanceCalled = true;
+                            $this->advanceCalled = true;
                         }
 
                         /** @var array<string, mixed> $result */
-                        $result = $resultSet->getCurrent();
+                        $result = $this->originalResultSet->getCurrent();
 
                         if (0 !== \count($result))
                         {
