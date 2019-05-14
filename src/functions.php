@@ -448,6 +448,7 @@ function castObjectToArray(object $object): array
  */
 function getObjectVars(object $object): array
 {
+    /** @var \Closure $closure */
     $closure = \Closure::bind(
         function(): array
         {
