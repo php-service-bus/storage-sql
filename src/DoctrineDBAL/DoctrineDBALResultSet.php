@@ -26,16 +26,12 @@ final class DoctrineDBALResultSet implements ResultSet
     /**
      * Last row emitted.
      *
-     * @psalm-var array<array-key, string|int|float|resource|null>|null
-     *
      * @var array|null
      */
     private $currentRow;
 
     /**
      * Pdo fetch result.
-     *
-     * @psalm-var array<array-key, array<string, string|int|float|resource|null>|null
      *
      * @var array
      */
@@ -75,7 +71,6 @@ final class DoctrineDBALResultSet implements ResultSet
      */
     public function __construct(Connection $connection, Statement $wrappedStmt)
     {
-        /** @psalm-var array<array-key, array<string, string|int|float|resource|null>|null> $rows */
         $rows = $wrappedStmt->fetchAll();
 
         $this->connection   = $connection;

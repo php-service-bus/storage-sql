@@ -62,7 +62,6 @@ class AmpPostgreSQLResultSet implements ResultSet
         {
             if ($this->originalResultSet instanceof AmpResultSet)
             {
-                /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
                 return $this->originalResultSet->advance();
             }
 
@@ -120,7 +119,6 @@ class AmpPostgreSQLResultSet implements ResultSet
                     {
                         if (false === $this->advanceCalled)
                         {
-                            /** @psalm-suppress TooManyTemplateParams Invalid Promise template */
                             yield $this->originalResultSet->advance();
 
                             $this->advanceCalled = true;

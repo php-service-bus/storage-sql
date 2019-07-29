@@ -74,7 +74,6 @@ final class AmpPostgreSQLTransaction implements Transaction
                {
                    $logger->debug($queryString, $parameters);
 
-                   /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
                    return new AmpPostgreSQLResultSet(
                        yield $transaction->execute($queryString, $parameters)
                     );
@@ -107,7 +106,6 @@ final class AmpPostgreSQLTransaction implements Transaction
                 {
                     $logger->debug('COMMIT');
 
-                    /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
                     yield $transaction->commit();
 
                     $transaction->close();
@@ -138,7 +136,6 @@ final class AmpPostgreSQLTransaction implements Transaction
                 {
                     $logger->debug('ROLLBACK');
 
-                    /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
                     yield $transaction->rollback();
                 }
                 // @codeCoverageIgnoreStart

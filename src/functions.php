@@ -37,7 +37,7 @@ use ServiceBus\Storage\Common\ResultSet;
  *
  * @throws \ServiceBus\Storage\Common\Exceptions\ResultSetIterationFailed
  *
- * @return Promise<array<int, mixed>|null>
+ * @return Promise<array<int, mixed>>
  */
 function fetchAll(ResultSet $iterator): Promise
 {
@@ -48,7 +48,6 @@ function fetchAll(ResultSet $iterator): Promise
         {
             $array = [];
 
-            /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
             while (yield $iterator->advance())
             {
                 $array[] = $iterator->getCurrent();
@@ -79,11 +78,7 @@ function fetchOne(ResultSet $iterator): Promise
     return call(
         static function(ResultSet $iterator): \Generator
         {
-            /**
-             * @psalm-suppress TooManyTemplateParams Wrong Promise template
-             *
-             * @var array $collection
-             */
+            /** @var array $collection */
             $collection   = yield fetchAll($iterator);
             $resultsCount = \count($collection);
 
@@ -142,10 +137,7 @@ function find(QueryExecutor $queryExecutor, string $tableName, array $criteria =
              */
             [$query, $parameters] = buildQuery(selectQuery($tableName), $criteria, $orderBy, $limit);
 
-            /**
-             * @psalm-suppress TooManyTemplateParams Wrong Promise template
-             * @psalm-suppress MixedTypeCoercion Invalid params() docblock
-             */
+            /** @psalm-suppress MixedTypeCoercion Invalid params() docblock */
             return yield $queryExecutor->execute($query, $parameters);
         },
         $tableName,
@@ -190,7 +182,6 @@ function remove(QueryExecutor $queryExecutor, string $tableName, array $criteria
             [$query, $parameters] = buildQuery(deleteQuery($tableName), $criteria);
 
             /**
-             * @psalm-suppress TooManyTemplateParams Wrong Promise template
              * @psalm-suppress MixedTypeCoercion Invalid params() docblock
              *
              * @var \ServiceBus\Storage\Common\ResultSet $resultSet

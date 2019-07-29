@@ -25,7 +25,7 @@ use ServiceBus\Storage\Common\Exceptions\InvalidConfigurationOptions;
 use ServiceBus\Storage\Common\StorageConfiguration;
 
 /**
- *
+ * @see https://github.com/amphp/postgres
  */
 final class AmpPostgreSQLAdapter implements DatabaseAdapter
 {
@@ -57,7 +57,7 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
     public function __construct(StorageConfiguration $configuration, ?LoggerInterface $logger = null)
     {
         // @codeCoverageIgnoreStart
-        if (false === \extension_loaded('pgsql'))
+        if(false === \extension_loaded('pgsql'))
         {
             throw new InvalidConfigurationOptions('ext-pgsql must be installed');
         }
@@ -70,7 +70,7 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
     public function __destruct()
     {
         /** @psalm-suppress RedundantConditionGivenDocblockType Null in case of error */
-        if (null !== $this->pool)
+        if(null !== $this->pool)
         {
             $this->pool->close();
         }
@@ -95,12 +95,11 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
                 {
                     $logger->debug($queryString, $parameters);
 
-                    /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
                     return new AmpPostgreSQLResultSet(
                         yield $pool->execute($queryString, $parameters)
                     );
                 }
-                catch (\Throwable $throwable)
+                catch(\Throwable $throwable)
                 {
                     throw adaptAmpThrowable($throwable);
                 }
@@ -123,14 +122,9 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
         return call(
             static function() use ($pool, $logger, $function): \Generator
             {
-                /**
-                 * @psalm-suppress TooManyTemplateParams
-                 *
-                 * @var \Amp\Postgres\Transaction $originalTransaction
-                 */
+                /** @var \Amp\Postgres\Transaction $originalTransaction  */
                 $originalTransaction = yield $pool->beginTransaction();
 
-                /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
                 $transaction = new AmpPostgreSQLTransaction($originalTransaction, $logger);
 
                 $logger->debug('BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED');
@@ -142,12 +136,10 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
 
                     yield new Coroutine($generator);
 
-                    /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
                     yield $transaction->commit();
                 }
-                catch (\Throwable $throwable)
+                catch(\Throwable $throwable)
                 {
-                    /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
                     yield $transaction->rollback();
 
                     throw $throwable;
@@ -178,17 +170,13 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
                 {
                     $logger->debug('BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED');
 
-                    /**
-                     * @psalm-suppress TooManyTemplateParams Wrong Promise template
-                     *
-                     * @var \Amp\Postgres\Transaction $transaction
-                     */
+                    /** @var \Amp\Postgres\Transaction $transaction */
                     $transaction = yield $pool->beginTransaction();
 
                     return new AmpPostgreSQLTransaction($transaction, $logger);
                 }
-                // @codeCoverageIgnoreStart
-                catch (\Throwable $throwable)
+                    // @codeCoverageIgnoreStart
+                catch(\Throwable $throwable)
                 {
                     throw adaptAmpThrowable($throwable);
                 }
@@ -202,7 +190,7 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
      */
     public function unescapeBinary($payload): string
     {
-        if (true === \is_resource($payload))
+        if(true === \is_resource($payload))
         {
             $payload = \stream_get_contents($payload, -1, 0);
         }
@@ -217,7 +205,7 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
      */
     private function pool(): Pool
     {
-        if (null === $this->pool)
+        if(null === $this->pool)
         {
             $queryData = $this->configuration->queryParameters;
 
