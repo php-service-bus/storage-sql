@@ -43,16 +43,16 @@
     "php": ">=7.3",
     "ext-pgsql": "*",
     "php-service-bus/storage-common": "v3.3.*",
-    "amphp/postgres": "1.0.4",
-    "latitude/latitude": "^3.1",
-    "psr/log": "1.1.*"
+    "amphp/postgres": "v1.0.*",
+    "latitude/latitude": "v3.3.*",
+    "psr/log": "v1.1.*"
   },
   "require-dev": {
-    "php-service-bus/code-style-config": "^v0.1",
-    "doctrine/dbal": "^v2.6",
-    "phpunit/phpunit": "^8",
-    "vimeo/psalm": "^3",
-    "phpstan/phpstan": "0.11.*"
+    "php-service-bus/code-style-config": "v0.1.*",
+    "doctrine/dbal": "v2.9.*",
+    "phpunit/phpunit": "v8.3.*",
+    "vimeo/psalm": "v3.4.*",
+    "phpstan/phpstan": "v0.11.*"
   },
   "prefer-stable": true,
   "minimum-stability": "stable",
