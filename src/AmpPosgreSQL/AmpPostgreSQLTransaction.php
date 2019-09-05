@@ -76,7 +76,7 @@ final class AmpPostgreSQLTransaction implements Transaction
 
                    return new AmpPostgreSQLResultSet(
                        yield $transaction->execute($queryString, $parameters)
-                    );
+                   );
                }
                // @codeCoverageIgnoreStart
                catch (\Throwable $throwable)
