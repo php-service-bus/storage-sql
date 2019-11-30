@@ -21,8 +21,6 @@ use ServiceBus\Storage\Common\StorageConfiguration;
  *
  * @internal
  *
- * @param \Throwable $throwable
- *
  * @return InternalExceptions\ConnectionFailed|InternalExceptions\StorageInteractingFailed|InternalExceptions\UniqueConstraintViolationCheckFailed
  */
 function adaptDbalThrowable(\Throwable $throwable): \Exception
@@ -43,15 +41,10 @@ function adaptDbalThrowable(\Throwable $throwable): \Exception
 }
 
 /**
- * @noinspection PhpDocMissingThrowsInspection
- *
  * @internal
- *
- * @return DoctrineDBALAdapter
  */
 function inMemoryAdapter(): DoctrineDBALAdapter
 {
-    /** @noinspection PhpUnhandledExceptionInspection */
     return new DoctrineDBALAdapter(
         new StorageConfiguration('sqlite:///:memory:')
     );

@@ -35,7 +35,7 @@ class AmpPostgreSQLResultSet implements ResultSet
     /**
      * @var bool
      */
-    private $advanceCalled = false;
+    private bool $advanceCalled = false;
 
     /**
      * @noinspection   PhpDocSignatureInspection
@@ -109,7 +109,6 @@ class AmpPostgreSQLResultSet implements ResultSet
      */
     public function lastInsertId(?string $sequence = null): Promise
     {
-        /** @psalm-suppress InvalidArgument */
         return call(
             function(): \Generator
             {

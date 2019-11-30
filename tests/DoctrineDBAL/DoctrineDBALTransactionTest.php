@@ -23,10 +23,7 @@ use ServiceBus\Storage\Sql\Tests\BaseTransactionTest;
  */
 final class DoctrineDBALTransactionTest extends BaseTransactionTest
 {
-    /**
-     * @var DoctrineDBALAdapter
-     */
-    private static $adapter;
+    private static DoctrineDBALAdapter $adapter;
 
     /**
      * {@inheritdoc}
@@ -67,7 +64,7 @@ final class DoctrineDBALTransactionTest extends BaseTransactionTest
      */
     protected static function getAdapter(): DatabaseAdapter
     {
-        if (null === self::$adapter)
+        if (isset(self::$adapter) === false)
         {
             self::$adapter = inMemoryAdapter();
         }

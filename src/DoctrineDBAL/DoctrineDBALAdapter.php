@@ -32,29 +32,12 @@ use ServiceBus\Storage\Common\StorageConfiguration;
  */
 final class DoctrineDBALAdapter implements DatabaseAdapter
 {
-    /**
-     * Storage config.
-     *
-     * @var StorageConfiguration
-     */
-    private $configuration;
+    private StorageConfiguration $configuration;
 
-    /**
-     * Doctrine connection.
-     *
-     * @var Connection|null
-     */
-    private $connection;
+    private ?Connection $connection;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
-    /**
-     * @param StorageConfiguration $configuration
-     * @param LoggerInterface|null $logger
-     */
     public function __construct(StorageConfiguration $configuration, LoggerInterface $logger = null)
     {
         $this->configuration = $configuration;
@@ -179,12 +162,10 @@ final class DoctrineDBALAdapter implements DatabaseAdapter
      * Get connection instance.
      *
      * @throws \ServiceBus\Storage\Common\Exceptions\InvalidConfigurationOptions
-     *
-     * @return Connection
      */
     private function connection(): Connection
     {
-        if (null === $this->connection)
+        if (isset($this->connection) === false)
         {
             try
             {

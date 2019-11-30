@@ -27,17 +27,14 @@ use ServiceBus\Storage\Sql\Tests\BaseStorageAdapterTest;
  */
 final class DoctrineDBALAdapterTest extends BaseStorageAdapterTest
 {
-    /**
-     * @var DoctrineDBALAdapter
-     */
-    private static $adapter;
+    private static DoctrineDBALAdapter $adapter;
 
     /**
      * {@inheritdoc}
      */
     protected static function getAdapter(): DatabaseAdapter
     {
-        if (null === self::$adapter)
+        if (isset(self::$adapter) === false)
         {
             self::$adapter = inMemoryAdapter();
         }
@@ -65,9 +62,6 @@ final class DoctrineDBALAdapterTest extends BaseStorageAdapterTest
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
-     *
      */
     public function lastInsertId(): void
     {
@@ -95,9 +89,6 @@ final class DoctrineDBALAdapterTest extends BaseStorageAdapterTest
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
-     *
      */
     public function failedConnection(): void
     {
@@ -121,9 +112,6 @@ final class DoctrineDBALAdapterTest extends BaseStorageAdapterTest
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
-     *
      */
     public function failedConnectionString(): void
     {

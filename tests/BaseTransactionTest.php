@@ -49,8 +49,6 @@ abstract class BaseTransactionTest extends TestCase
 
     /**
      * Get database adapter.
-     *
-     * @return DatabaseAdapter
      */
     abstract protected static function getAdapter(): DatabaseAdapter;
 
@@ -58,8 +56,6 @@ abstract class BaseTransactionTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function simpleTransaction(): void
     {
@@ -97,8 +93,6 @@ abstract class BaseTransactionTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function successTransactional(): void
     {
@@ -134,8 +128,6 @@ abstract class BaseTransactionTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function transactionWithReadData(): void
     {
@@ -173,8 +165,6 @@ abstract class BaseTransactionTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function rollback(): void
     {
@@ -211,8 +201,6 @@ abstract class BaseTransactionTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function transactionalWithDuplicate(): void
     {

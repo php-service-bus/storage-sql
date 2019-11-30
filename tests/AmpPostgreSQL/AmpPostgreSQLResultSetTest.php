@@ -26,10 +26,7 @@ use ServiceBus\Storage\Sql\AmpPosgreSQL\AmpPostgreSQLAdapter;
  */
 final class AmpPostgreSQLResultSetTest extends TestCase
 {
-    /**
-     * @var AmpPostgreSQLAdapter
-     */
-    private static $adapter;
+    private static AmpPostgreSQLAdapter $adapter;
 
     /**
      * {@inheritdoc}
@@ -63,8 +60,6 @@ final class AmpPostgreSQLResultSetTest extends TestCase
             wait(
                 self::$adapter->execute('DROP TABLE test_result_set')
             );
-
-            self::$adapter = null;
         }
         catch (\Throwable $throwable)
         {
@@ -89,9 +84,6 @@ final class AmpPostgreSQLResultSetTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
-     *
      */
     public function fetchOne(): void
     {
@@ -135,9 +127,6 @@ final class AmpPostgreSQLResultSetTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
-     *
      */
     public function fetchAll(): void
     {
@@ -166,9 +155,6 @@ final class AmpPostgreSQLResultSetTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
-     *
      */
     public function fetchAllWithEmptySet(): void
     {
@@ -189,9 +175,6 @@ final class AmpPostgreSQLResultSetTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
-     *
      */
     public function multipleGetCurrentRow(): void
     {
@@ -226,9 +209,6 @@ final class AmpPostgreSQLResultSetTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
-     *
      */
     public function executeCommand(): void
     {

@@ -22,8 +22,6 @@ use ServiceBus\Storage\Common\StorageConfiguration;
  *
  * @internal
  *
- * @param \Throwable $throwable
- *
  * @return InternalExceptions\ConnectionFailed|InternalExceptions\StorageInteractingFailed|InternalExceptions\UniqueConstraintViolationCheckFailed
  */
 function adaptAmpThrowable(\Throwable $throwable): \Throwable
@@ -58,11 +56,7 @@ function adaptAmpThrowable(\Throwable $throwable): \Throwable
 /**
  * @internal
  *
- * @param string $connectionDsn
- *
  * @throws InternalExceptions\InvalidConfigurationOptions
- *
- * @return AmpPostgreSQLAdapter
  */
 function postgreSqlAdapterFactory(string $connectionDsn): AmpPostgreSQLAdapter
 {

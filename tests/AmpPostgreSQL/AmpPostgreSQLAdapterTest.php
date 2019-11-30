@@ -26,17 +26,8 @@ use ServiceBus\Storage\Sql\Tests\BaseStorageAdapterTest;
  */
 final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
 {
-    /**
-     * @var AmpPostgreSQLAdapter
-     */
-    private static $adapter;
+    private static AmpPostgreSQLAdapter $adapter;
 
-    /**
-     * @throws \Throwable
-     *
-     * @return void
-     *
-     */
     public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
@@ -51,8 +42,6 @@ final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
     /**
      * @throws \Throwable
      *
-     * @return void
-     *
      */
     public static function tearDownAfterClass(): void
     {
@@ -62,10 +51,8 @@ final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
         {
             wait($adapter->execute('DROP TABLE storage_test_table'));
             wait($adapter->execute('DROP TABLE test_ai'));
-
-            self::$adapter = null;
         }
-        catch (\Throwable $throwable)
+        catch(\Throwable $throwable)
         {
         }
     }
@@ -91,7 +78,7 @@ final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
      */
     protected static function getAdapter(): DatabaseAdapter
     {
-        if (null === self::$adapter)
+        if(isset(self::$adapter) === false)
         {
             self::$adapter = postgreSqlAdapterFactory((string) \getenv('TEST_POSTGRES_DSN'));
         }
@@ -103,9 +90,6 @@ final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
-     *
      */
     public function lastInsertId(): void
     {
@@ -133,9 +117,6 @@ final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
-     *
      */
     public function failedConnection(): void
     {

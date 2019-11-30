@@ -26,7 +26,7 @@ final class AmpPostgreSQLTransactionTest extends BaseTransactionTest
     /**
      * @var AmpPostgreSQLAdapter
      */
-    private static $adapter;
+    private static AmpPostgreSQLAdapter $adapter;
 
     /**
      * {@inheritdoc}
@@ -64,13 +64,10 @@ final class AmpPostgreSQLTransactionTest extends BaseTransactionTest
 
     /**
      * @throws \Throwable
-     *
-     * @return DatabaseAdapter
-     *
      */
     protected static function getAdapter(): DatabaseAdapter
     {
-        if (null === self::$adapter)
+        if (isset(self::$adapter) === false)
         {
             self::$adapter = postgreSqlAdapterFactory((string) \getenv('TEST_POSTGRES_DSN'));
         }

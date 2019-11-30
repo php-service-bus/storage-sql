@@ -26,10 +26,7 @@ use ServiceBus\Storage\Sql\DoctrineDBAL\DoctrineDBALAdapter;
  */
 final class DoctrineDBALResultSetTest extends TestCase
 {
-    /**
-     * @var DoctrineDBALAdapter
-     */
-    private $adapter;
+    private DoctrineDBALAdapter $adapter;
 
     /**
      * {@inheritdoc}
@@ -67,9 +64,6 @@ final class DoctrineDBALResultSetTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
-     *
      */
     public function fetchOne(): void
     {
@@ -108,9 +102,6 @@ final class DoctrineDBALResultSetTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
-     *
      */
     public function fetchAll(): void
     {
@@ -141,9 +132,6 @@ final class DoctrineDBALResultSetTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
-     *
      */
     public function fetchAllWithEmptySet(): void
     {
@@ -166,9 +154,6 @@ final class DoctrineDBALResultSetTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
-     *
      */
     public function multipleGetCurrentRow(): void
     {

@@ -30,10 +30,7 @@ use ServiceBus\Storage\Common\ResultSet;
  * Collect iterator data
  * Not recommended for use on large amounts of data.
  *
- * @noinspection   PhpDocRedundantThrowsInspection
  * @psalm-suppress MixedTypeCoercion Incorrect resolving the value of the promise
- *
- * @param ResultSet $iterator
  *
  * @throws \ServiceBus\Storage\Common\Exceptions\ResultSetIterationFailed
  *
@@ -41,14 +38,12 @@ use ServiceBus\Storage\Common\ResultSet;
  */
 function fetchAll(ResultSet $iterator): Promise
 {
-    /** @psalm-suppress InvalidArgument */
     return call(
-    /** @psalm-suppress InvalidReturnType Incorrect resolving the value of the generator */
         static function(ResultSet $iterator): \Generator
         {
             $array = [];
 
-            while (yield $iterator->advance())
+            while(yield $iterator->advance())
             {
                 $array[] = $iterator->getCurrent();
             }
@@ -62,10 +57,7 @@ function fetchAll(ResultSet $iterator): Promise
 /**
  * Extract 1 result.
  *
- * @noinspection   PhpDocRedundantThrowsInspection
  * @psalm-suppress MixedTypeCoercion Incorrect resolving the value of the promise
- *
- * @param ResultSet $iterator
  *
  * @throws \ServiceBus\Storage\Common\Exceptions\ResultSetIterationFailed
  * @throws \ServiceBus\Storage\Common\Exceptions\OneResultExpected The result must contain only 1 row
@@ -74,7 +66,6 @@ function fetchAll(ResultSet $iterator): Promise
  */
 function fetchOne(ResultSet $iterator): Promise
 {
-    /** @psalm-suppress InvalidArgument */
     return call(
         static function(ResultSet $iterator): \Generator
         {
@@ -82,7 +73,7 @@ function fetchOne(ResultSet $iterator): Promise
             $collection   = yield fetchAll($iterator);
             $resultsCount = \count($collection);
 
-            if (0 === $resultsCount || 1 === $resultsCount)
+            if(0 === $resultsCount || 1 === $resultsCount)
             {
                 /** @var array|bool $endElement */
                 $endElement = \end($collection);
@@ -108,11 +99,7 @@ function fetchOne(ResultSet $iterator): Promise
  * @psalm-param    array<string, string> $orderBy
  * @psalm-suppress MixedTypeCoercion
  *
- * @param QueryExecutor                              $queryExecutor
- * @param string                                     $tableName
  * @param \Latitude\QueryBuilder\CriteriaInterface[] $criteria
- * @param int|null                                   $limit
- * @param array                                      $orderBy
  *
  * @throws \ServiceBus\Storage\Common\Exceptions\ConnectionFailed Could not connect to database
  * @throws \ServiceBus\Storage\Common\Exceptions\InvalidConfigurationOptions
@@ -123,10 +110,6 @@ function fetchOne(ResultSet $iterator): Promise
  */
 function find(QueryExecutor $queryExecutor, string $tableName, array $criteria = [], ?int $limit = null, array $orderBy = []): Promise
 {
-    /**
-     * @psalm-suppress InvalidArgument Incorrect psalm unpack parameters (...$args)
-     * @psalm-suppress MixedArgument
-     */
     return call(
         static function(string $tableName, array $criteria, ?int $limit, array $orderBy) use ($queryExecutor): \Generator
         {
@@ -137,7 +120,6 @@ function find(QueryExecutor $queryExecutor, string $tableName, array $criteria =
              */
             [$query, $parameters] = buildQuery(selectQuery($tableName), $criteria, $orderBy, $limit);
 
-            /** @psalm-suppress MixedTypeCoercion Invalid params() docblock */
             return yield $queryExecutor->execute($query, $parameters);
         },
         $tableName,
@@ -150,11 +132,9 @@ function find(QueryExecutor $queryExecutor, string $tableName, array $criteria =
 /**
  * Create & execute DELETE query.
  *
- * @psalm-param array<mixed, \Latitude\QueryBuilder\CriteriaInterface> $criteria
+ * @psalm-param    array<mixed, \Latitude\QueryBuilder\CriteriaInterface> $criteria
  * @psalm-suppress MixedTypeCoercion
  *
- * @param QueryExecutor                              $queryExecutor
- * @param string                                     $tableName
  * @param \Latitude\QueryBuilder\CriteriaInterface[] $criteria
  *
  * @throws \ServiceBus\Storage\Common\Exceptions\ConnectionFailed Could not connect to database
@@ -182,9 +162,7 @@ function remove(QueryExecutor $queryExecutor, string $tableName, array $criteria
             [$query, $parameters] = buildQuery(deleteQuery($tableName), $criteria);
 
             /**
-             * @psalm-suppress MixedTypeCoercion Invalid params() docblock
-             *
-             * @var \ServiceBus\Storage\Common\ResultSet $resultSet
+              * @var \ServiceBus\Storage\Common\ResultSet $resultSet
              */
             $resultSet = yield $queryExecutor->execute($query, $parameters);
 
@@ -205,10 +183,7 @@ function remove(QueryExecutor $queryExecutor, string $tableName, array $criteria
  * @psalm-param array<mixed, \Latitude\QueryBuilder\CriteriaInterface> $criteria
  * @psalm-param array<string, string>                                  $orderBy
  *
- * @param LatitudeQuery\AbstractQuery                $queryBuilder
  * @param \Latitude\QueryBuilder\CriteriaInterface[] $criteria
- * @param array                                      $orderBy
- * @param int|null                                   $limit
  *
  * @return array 0 - SQL query; 1 - query parameters
  */
@@ -217,26 +192,27 @@ function buildQuery(
     array $criteria = [],
     array $orderBy = [],
     ?int $limit = null
-): array {
+): array
+{
     /** @var LatitudeQuery\DeleteQuery|LatitudeQuery\SelectQuery|LatitudeQuery\UpdateQuery $queryBuilder */
     $isFirstCondition = true;
 
     /** @var \Latitude\QueryBuilder\CriteriaInterface $criteriaItem */
-    foreach ($criteria as $criteriaItem)
+    foreach($criteria as $criteriaItem)
     {
         $methodName = true === $isFirstCondition ? 'where' : 'andWhere';
         $queryBuilder->{$methodName}($criteriaItem);
         $isFirstCondition = false;
     }
 
-    if ($queryBuilder instanceof LatitudeQuery\SelectQuery)
+    if($queryBuilder instanceof LatitudeQuery\SelectQuery)
     {
-        foreach ($orderBy as $column => $direction)
+        foreach($orderBy as $column => $direction)
         {
             $queryBuilder->orderBy($column, $direction);
         }
 
-        if (null !== $limit)
+        if(null !== $limit)
         {
             $queryBuilder->limit($limit);
         }
@@ -257,23 +233,22 @@ function buildQuery(
  *
  * @psalm-return array<string, string|int|null|float>|string
  *
- * @param QueryExecutor $queryExecutor
- * @param array|string  $data
+ * @param array|string $data
  *
  * @return array|string
  */
 function unescapeBinary(QueryExecutor $queryExecutor, $data)
 {
-    if ($queryExecutor instanceof BinaryDataDecoder)
+    if($queryExecutor instanceof BinaryDataDecoder)
     {
-        if (false === \is_array($data))
+        if(false === \is_array($data))
         {
             return $queryExecutor->unescapeBinary((string) $data);
         }
 
-        foreach ($data as $key => $value)
+        foreach($data as $key => $value)
         {
-            if (false === empty($value) && true === \is_string($value))
+            if(false === empty($value) && true === \is_string($value))
             {
                 $data[$key] = $queryExecutor->unescapeBinary($value);
             }
@@ -286,16 +261,13 @@ function unescapeBinary(QueryExecutor $queryExecutor, $data)
 /**
  * Create equals criteria.
  *
- * @param string                  $field
  * @param float|int|object|string $value
  *
  * @throws \ServiceBus\Storage\Common\Exceptions\IncorrectParameterCast
- *
- * @return \Latitude\QueryBuilder\CriteriaInterface
  */
 function equalsCriteria(string $field, $value): CriteriaInterface
 {
-    if (true === \is_object($value))
+    if(true === \is_object($value))
     {
         $value = castObjectToString($value);
     }
@@ -306,16 +278,13 @@ function equalsCriteria(string $field, $value): CriteriaInterface
 /**
  * Create not equals criteria.
  *
- * @param string                  $field
  * @param float|int|object|string $value
  *
  * @throws \ServiceBus\Storage\Common\Exceptions\IncorrectParameterCast
- *
- * @return \Latitude\QueryBuilder\CriteriaInterface
  */
 function notEqualsCriteria(string $field, $value): CriteriaInterface
 {
-    if (true === \is_object($value))
+    if(true === \is_object($value))
     {
         $value = castObjectToString($value);
     }
@@ -325,10 +294,6 @@ function notEqualsCriteria(string $field, $value): CriteriaInterface
 
 /**
  * Create query builder.
- *
- * @param EngineInterface|null $engine
- *
- * @return QueryFactory
  */
 function queryBuilder(EngineInterface $engine = null): QueryFactory
 {
@@ -339,11 +304,6 @@ function queryBuilder(EngineInterface $engine = null): QueryFactory
  * Create select query (for PostgreSQL).
  *
  * @noinspection PhpDocSignatureInspection
- *
- * @param string $fromTable
- * @param string ...$columns
- *
- * @return LatitudeQuery\SelectQuery
  */
 function selectQuery(string $fromTable, string ...$columns): LatitudeQuery\SelectQuery
 {
@@ -355,12 +315,9 @@ function selectQuery(string $fromTable, string ...$columns): LatitudeQuery\Selec
  *
  * @psalm-param array<string, mixed>|object $toUpdate
  *
- * @param string       $tableName
  * @param array|object $toUpdate
  *
  * @throws \ServiceBus\Storage\Common\Exceptions\IncorrectParameterCast
- *
- * @return LatitudeQuery\UpdateQuery
  */
 function updateQuery(string $tableName, $toUpdate): LatitudeQuery\UpdateQuery
 {
@@ -371,10 +328,6 @@ function updateQuery(string $tableName, $toUpdate): LatitudeQuery\UpdateQuery
 
 /**
  * Create delete query (for PostgreSQL).
- *
- * @param string $fromTable
- *
- * @return LatitudeQuery\DeleteQuery
  */
 function deleteQuery(string $fromTable): LatitudeQuery\DeleteQuery
 {
@@ -386,12 +339,9 @@ function deleteQuery(string $fromTable): LatitudeQuery\DeleteQuery
  *
  * @psalm-param array<string, mixed>|object $toInsert
  *
- * @param string       $toTable
  * @param array|object $toInsert
  *
  * @throws \ServiceBus\Storage\Common\Exceptions\IncorrectParameterCast
- *
- * @return LatitudeQuery\InsertQuery
  */
 function insertQuery(string $toTable, $toInsert): LatitudeQuery\InsertQuery
 {
@@ -407,18 +357,14 @@ function insertQuery(string $toTable, $toInsert): LatitudeQuery\InsertQuery
  *
  * @psalm-return array<string, float|int|string|null>
  *
- * @param object $object
- *
  * @throws \ServiceBus\Storage\Common\Exceptions\IncorrectParameterCast
- *
- * @return array
  */
 function castObjectToArray(object $object): array
 {
     $result = [];
 
     /** @var float|int|object|string|null $value */
-    foreach (getObjectVars($object) as $key => $value)
+    foreach(getObjectVars($object) as $key => $value)
     {
         $result[toSnakeCase($key)] = cast($key, $value);
     }
@@ -432,10 +378,6 @@ function castObjectToArray(object $object): array
  * @internal
  *
  * @psalm-return array<string, float|int|object|string|null>
- *
- * @param object $object
- *
- * @return array
  */
 function getObjectVars(object $object): array
 {
@@ -443,11 +385,7 @@ function getObjectVars(object $object): array
     $closure = \Closure::bind(
         function(): array
         {
-            /**
-             * @var object $this
-             *
-             * @psalm-suppress InvalidScope Closure:bind not supports
-             */
+            /** @var object $this */
             return \get_object_vars($this);
         },
         $object,
@@ -468,16 +406,12 @@ function getObjectVars(object $object): array
  * @internal
  *
  * Convert string from lowerCamelCase to snake_case
- *
- * @param string $string
- *
- * @return string
  */
 function toSnakeCase(string $string): string
 {
     $replaced = \preg_replace('/(?<!^)[A-Z]/', '_$0', $string);
 
-    if (true === \is_string($replaced))
+    if(true === \is_string($replaced))
     {
         return \strtolower($replaced);
     }
@@ -488,23 +422,21 @@ function toSnakeCase(string $string): string
 /**
  * @internal
  *
- * @param string                       $key
  * @param float|int|object|string|null $value
  *
  * @throws \ServiceBus\Storage\Common\Exceptions\IncorrectParameterCast
  *
  * @return float|int|string|null
- *
  */
 function cast(string $key, $value)
 {
-    if (null === $value || true === \is_scalar($value))
+    if(null === $value || true === \is_scalar($value))
     {
         return $value;
     }
 
     /** @psalm-suppress RedundantConditionGivenDocblockType */
-    if (true === \is_object($value))
+    if(true === \is_object($value))
     {
         return castObjectToString($value);
     }
@@ -523,16 +455,11 @@ function cast(string $key, $value)
  *
  * @internal
  *
- * @param object $object
- *
  * @throws \ServiceBus\Storage\Common\Exceptions\IncorrectParameterCast
- *
- * @return string
- *
  */
 function castObjectToString(object $object): string
 {
-    if (true === \method_exists($object, '__toString'))
+    if(true === \method_exists($object, '__toString'))
     {
         /** @psalm-suppress InvalidCast Object have __toString method */
         return (string) $object;

@@ -25,22 +25,10 @@ use ServiceBus\Storage\Common\Transaction;
  */
 final class AmpPostgreSQLTransaction implements Transaction
 {
-    /**
-     * Original transaction object.
-     *
-     * @var AmpTransaction
-     */
-    private $transaction;
+    private AmpTransaction $transaction;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
-    /**
-     * @param AmpTransaction  $transaction
-     * @param LoggerInterface $logger
-     */
     public function __construct(AmpTransaction $transaction, LoggerInterface $logger)
     {
         $this->transaction = $transaction;
@@ -98,7 +86,6 @@ final class AmpPostgreSQLTransaction implements Transaction
         $transaction = $this->transaction;
         $logger = $this->logger;
 
-        /** @psalm-suppress MixedTypeCoercion */
         return call(
             static function() use ($transaction, $logger): \Generator
             {
@@ -128,7 +115,6 @@ final class AmpPostgreSQLTransaction implements Transaction
         $transaction = $this->transaction;
         $logger = $this->logger;
 
-        /** @psalm-suppress MixedTypeCoercion */
         return call(
             static function() use ($transaction, $logger): \Generator
             {

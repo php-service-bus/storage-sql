@@ -34,8 +34,6 @@ abstract class BaseStorageAdapterTest extends TestCase
 {
     /**
      * Get database adapter.
-     *
-     * @return DatabaseAdapter
      */
     abstract protected static function getAdapter(): DatabaseAdapter;
 
@@ -75,9 +73,6 @@ abstract class BaseStorageAdapterTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
-     *
      */
     public function unescapeBinary(): void
     {
@@ -118,9 +113,6 @@ abstract class BaseStorageAdapterTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
-     *
      */
     public function resultSet(): void
     {
@@ -161,9 +153,6 @@ abstract class BaseStorageAdapterTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
-     *
      */
     public function emptyResultSet(): void
     {
@@ -187,9 +176,6 @@ abstract class BaseStorageAdapterTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
-     *
      */
     public function failedQuery(): void
     {
@@ -209,9 +195,6 @@ abstract class BaseStorageAdapterTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
-     *
      */
     public function findOne(): void
     {
@@ -245,8 +228,6 @@ abstract class BaseStorageAdapterTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function findOneWhenEmptySet(): void
     {
@@ -275,8 +256,6 @@ abstract class BaseStorageAdapterTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function findOneWhenWrongSet(): void
     {
@@ -304,8 +283,6 @@ abstract class BaseStorageAdapterTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function uniqueKeyCheckFailed(): void
     {
@@ -333,8 +310,6 @@ abstract class BaseStorageAdapterTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function rowsCount(): void
     {
@@ -384,8 +359,6 @@ abstract class BaseStorageAdapterTest extends TestCase
      * @param DatabaseAdapter $adapter
      *
      * @throws \Throwable
-     *
-     * @return Promise
      */
     private static function importFixtures(DatabaseAdapter $adapter): Promise
     {

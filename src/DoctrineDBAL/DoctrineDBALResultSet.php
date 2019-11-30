@@ -25,50 +25,34 @@ final class DoctrineDBALResultSet implements ResultSet
 {
     /**
      * Last row emitted.
-     *
-     * @var array|null
      */
-    private $currentRow;
+    private ?array $currentRow;
 
     /**
      * Pdo fetch result.
-     *
-     * @var array
      */
-    private $fetchResult;
+    private array $fetchResult;
 
     /**
      * Results count.
-     *
-     * @var int
      */
-    private $resultsCount;
+    private int $resultsCount;
 
     /**
      * Current iterator position.
-     *
-     * @var int
      */
-    private $currentPosition = 0;
+    private int $currentPosition = 0;
 
     /**
      * Connection instance.
-     *
-     * @var Connection
      */
-    private $connection;
+    private Connection $connection;
 
     /**
      * Number of rows affected by the last DELETE, INSERT, or UPDATE statement.
-     *
-     * @var int
      */
-    private $affectedRows;
+    private int $affectedRows;
 
-    /**
-     * @param Connection $connection
-     * @param Statement  $wrappedStmt
-     */
     public function __construct(Connection $connection, Statement $wrappedStmt)
     {
         $rows = $wrappedStmt->fetchAll();

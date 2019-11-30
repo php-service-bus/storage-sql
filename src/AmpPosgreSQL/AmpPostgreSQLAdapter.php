@@ -29,29 +29,13 @@ use ServiceBus\Storage\Common\StorageConfiguration;
  */
 final class AmpPostgreSQLAdapter implements DatabaseAdapter
 {
-    /**
-     * Connection parameters.
-     *
-     * @var StorageConfiguration
-     */
-    private $configuration;
+    private StorageConfiguration $configuration;
+
+    private ?Pool $pool;
+
+    private LoggerInterface $logger;
 
     /**
-     * Connections pool.
-     *
-     * @var Pool|null
-     */
-    private $pool;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @param StorageConfiguration $configuration
-     * @param LoggerInterface|null $logger
-     *
      * @throws \ServiceBus\Storage\Common\Exceptions\InvalidConfigurationOptions
      */
     public function __construct(StorageConfiguration $configuration, ?LoggerInterface $logger = null)
@@ -70,7 +54,7 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
     public function __destruct()
     {
         /** @psalm-suppress RedundantConditionGivenDocblockType Null in case of error */
-        if (null !== $this->pool)
+        if (isset($this->pool))
         {
             $this->pool->close();
         }
@@ -162,7 +146,6 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
         $pool   = $this->pool();
         $logger = $this->logger;
 
-        /** @psalm-suppress InvalidArgument */
         return call(
             static function() use ($pool, $logger): \Generator
             {
@@ -200,12 +183,10 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
 
     /**
      * Receive connection pool.
-     *
-     * @return Pool
      */
     private function pool(): Pool
     {
-        if (null === $this->pool)
+        if (isset($this->pool) === false)
         {
             $queryData = $this->configuration->queryParameters;
 

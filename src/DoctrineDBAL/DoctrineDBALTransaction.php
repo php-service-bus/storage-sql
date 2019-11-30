@@ -25,22 +25,10 @@ use ServiceBus\Storage\Common\Transaction;
  */
 final class DoctrineDBALTransaction implements Transaction
 {
-    /**
-     * DBAL connection.
-     *
-     * @var Connection
-     */
-    private $connection;
+    private Connection $connection;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
-    /**
-     * @param Connection      $connection
-     * @param LoggerInterface $logger
-     */
     public function __construct(Connection $connection, LoggerInterface $logger)
     {
         $this->connection = $connection;

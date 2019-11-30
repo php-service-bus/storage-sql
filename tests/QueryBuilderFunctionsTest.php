@@ -32,8 +32,6 @@ final class QueryBuilderFunctionsTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function buildQuery(): void
     {
@@ -60,8 +58,6 @@ final class QueryBuilderFunctionsTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function selectQuery(): void
     {
@@ -81,8 +77,6 @@ final class QueryBuilderFunctionsTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function updateQuery(): void
     {
@@ -102,8 +96,6 @@ final class QueryBuilderFunctionsTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function deleteQuery(): void
     {
@@ -117,8 +109,6 @@ final class QueryBuilderFunctionsTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function insertQueryFromObject(): void
     {
@@ -155,8 +145,6 @@ final class QueryBuilderFunctionsTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function insertQueryFromArray(): void
     {
@@ -174,8 +162,6 @@ final class QueryBuilderFunctionsTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function toSnakeCase(): void
     {
@@ -189,8 +175,6 @@ final class QueryBuilderFunctionsTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function castNonScalarType(): void
     {
@@ -205,8 +189,6 @@ final class QueryBuilderFunctionsTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function castObjectWithoutToString(): void
     {
@@ -225,8 +207,6 @@ final class QueryBuilderFunctionsTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function castObjectWithToString(): void
     {
@@ -245,8 +225,6 @@ final class QueryBuilderFunctionsTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function objectNotEqualsCriteria(): void
     {
@@ -276,8 +254,6 @@ final class QueryBuilderFunctionsTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function scalarNotEqualsCriteria(): void
     {
