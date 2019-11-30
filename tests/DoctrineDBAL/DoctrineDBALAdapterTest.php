@@ -34,7 +34,7 @@ final class DoctrineDBALAdapterTest extends BaseStorageAdapterTest
      */
     protected static function getAdapter(): DatabaseAdapter
     {
-        if (isset(self::$adapter) === false)
+        if (false === isset(self::$adapter))
         {
             self::$adapter = inMemoryAdapter();
         }

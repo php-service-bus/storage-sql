@@ -186,7 +186,7 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
      */
     private function pool(): Pool
     {
-        if (isset($this->pool) === false)
+        if (false === isset($this->pool))
         {
             $queryData = $this->configuration->queryParameters;
 

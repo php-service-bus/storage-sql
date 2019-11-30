@@ -165,7 +165,7 @@ final class DoctrineDBALAdapter implements DatabaseAdapter
      */
     private function connection(): Connection
     {
-        if (isset($this->connection) === false)
+        if (false === isset($this->connection))
         {
             try
             {

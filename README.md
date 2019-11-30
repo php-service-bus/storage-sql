@@ -1,7 +1,7 @@
 ## What is it?
-[![Build Status](https://travis-ci.org/php-service-bus/storage-sql.svg?branch=v3.3)](https://travis-ci.org/php-service-bus/storage-sql)
-[![Code Coverage](https://scrutinizer-ci.com/g/php-service-bus/storage-sql/badges/coverage.png?b=v3.3)](https://scrutinizer-ci.com/g/php-service-bus/storage-sql/?branch=v3.3)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/php-service-bus/storage-sql/badges/quality-score.png?b=v3.3)](https://scrutinizer-ci.com/g/php-service-bus/storage-sql/?branch=v3.3)
+[![Build Status](https://travis-ci.org/php-service-bus/storage-sql.svg?branch=v4.0)](https://travis-ci.org/php-service-bus/storage-sql)
+[![Code Coverage](https://scrutinizer-ci.com/g/php-service-bus/storage-sql/badges/coverage.png?b=v4.0)](https://scrutinizer-ci.com/g/php-service-bus/storage-sql/?branch=v4.0)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/php-service-bus/storage-sql/badges/quality-score.png?b=v4.0)](https://scrutinizer-ci.com/g/php-service-bus/storage-sql/?branch=v4.0)
 
 This component is part of the [PHP Service Bus](https://github.com/php-service-bus/service-bus): implementing PostgreSQL and SQLite adapters.
 

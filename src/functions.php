@@ -43,7 +43,7 @@ function fetchAll(ResultSet $iterator): Promise
         {
             $array = [];
 
-            while(yield $iterator->advance())
+            while (yield $iterator->advance())
             {
                 $array[] = $iterator->getCurrent();
             }
@@ -73,7 +73,7 @@ function fetchOne(ResultSet $iterator): Promise
             $collection   = yield fetchAll($iterator);
             $resultsCount = \count($collection);
 
-            if(0 === $resultsCount || 1 === $resultsCount)
+            if (0 === $resultsCount || 1 === $resultsCount)
             {
                 /** @var array|bool $endElement */
                 $endElement = \end($collection);
@@ -162,7 +162,7 @@ function remove(QueryExecutor $queryExecutor, string $tableName, array $criteria
             [$query, $parameters] = buildQuery(deleteQuery($tableName), $criteria);
 
             /**
-              * @var \ServiceBus\Storage\Common\ResultSet $resultSet
+             * @var \ServiceBus\Storage\Common\ResultSet $resultSet
              */
             $resultSet = yield $queryExecutor->execute($query, $parameters);
 
@@ -192,27 +192,26 @@ function buildQuery(
     array $criteria = [],
     array $orderBy = [],
     ?int $limit = null
-): array
-{
+): array {
     /** @var LatitudeQuery\DeleteQuery|LatitudeQuery\SelectQuery|LatitudeQuery\UpdateQuery $queryBuilder */
     $isFirstCondition = true;
 
     /** @var \Latitude\QueryBuilder\CriteriaInterface $criteriaItem */
-    foreach($criteria as $criteriaItem)
+    foreach ($criteria as $criteriaItem)
     {
         $methodName = true === $isFirstCondition ? 'where' : 'andWhere';
         $queryBuilder->{$methodName}($criteriaItem);
         $isFirstCondition = false;
     }
 
-    if($queryBuilder instanceof LatitudeQuery\SelectQuery)
+    if ($queryBuilder instanceof LatitudeQuery\SelectQuery)
     {
-        foreach($orderBy as $column => $direction)
+        foreach ($orderBy as $column => $direction)
         {
             $queryBuilder->orderBy($column, $direction);
         }
 
-        if(null !== $limit)
+        if (null !== $limit)
         {
             $queryBuilder->limit($limit);
         }
@@ -239,16 +238,16 @@ function buildQuery(
  */
 function unescapeBinary(QueryExecutor $queryExecutor, $data)
 {
-    if($queryExecutor instanceof BinaryDataDecoder)
+    if ($queryExecutor instanceof BinaryDataDecoder)
     {
-        if(false === \is_array($data))
+        if (false === \is_array($data))
         {
             return $queryExecutor->unescapeBinary((string) $data);
         }
 
-        foreach($data as $key => $value)
+        foreach ($data as $key => $value)
         {
-            if(false === empty($value) && true === \is_string($value))
+            if (false === empty($value) && true === \is_string($value))
             {
                 $data[$key] = $queryExecutor->unescapeBinary($value);
             }
@@ -267,7 +266,7 @@ function unescapeBinary(QueryExecutor $queryExecutor, $data)
  */
 function equalsCriteria(string $field, $value): CriteriaInterface
 {
-    if(true === \is_object($value))
+    if (true === \is_object($value))
     {
         $value = castObjectToString($value);
     }
@@ -284,7 +283,7 @@ function equalsCriteria(string $field, $value): CriteriaInterface
  */
 function notEqualsCriteria(string $field, $value): CriteriaInterface
 {
-    if(true === \is_object($value))
+    if (true === \is_object($value))
     {
         $value = castObjectToString($value);
     }
@@ -364,7 +363,7 @@ function castObjectToArray(object $object): array
     $result = [];
 
     /** @var float|int|object|string|null $value */
-    foreach(getObjectVars($object) as $key => $value)
+    foreach (getObjectVars($object) as $key => $value)
     {
         $result[toSnakeCase($key)] = cast($key, $value);
     }
@@ -411,7 +410,7 @@ function toSnakeCase(string $string): string
 {
     $replaced = \preg_replace('/(?<!^)[A-Z]/', '_$0', $string);
 
-    if(true === \is_string($replaced))
+    if (true === \is_string($replaced))
     {
         return \strtolower($replaced);
     }
@@ -430,13 +429,13 @@ function toSnakeCase(string $string): string
  */
 function cast(string $key, $value)
 {
-    if(null === $value || true === \is_scalar($value))
+    if (null === $value || true === \is_scalar($value))
     {
         return $value;
     }
 
     /** @psalm-suppress RedundantConditionGivenDocblockType */
-    if(true === \is_object($value))
+    if (true === \is_object($value))
     {
         return castObjectToString($value);
     }
@@ -459,7 +458,7 @@ function cast(string $key, $value)
  */
 function castObjectToString(object $object): string
 {
-    if(true === \method_exists($object, '__toString'))
+    if (true === \method_exists($object, '__toString'))
     {
         /** @psalm-suppress InvalidCast Object have __toString method */
         return (string) $object;

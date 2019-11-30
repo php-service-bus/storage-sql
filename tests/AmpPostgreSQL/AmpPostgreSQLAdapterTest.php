@@ -52,7 +52,7 @@ final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
             wait($adapter->execute('DROP TABLE storage_test_table'));
             wait($adapter->execute('DROP TABLE test_ai'));
         }
-        catch(\Throwable $throwable)
+        catch (\Throwable $throwable)
         {
         }
     }
@@ -78,7 +78,7 @@ final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
      */
     protected static function getAdapter(): DatabaseAdapter
     {
-        if(isset(self::$adapter) === false)
+        if (false === isset(self::$adapter))
         {
             self::$adapter = postgreSqlAdapterFactory((string) \getenv('TEST_POSTGRES_DSN'));
         }

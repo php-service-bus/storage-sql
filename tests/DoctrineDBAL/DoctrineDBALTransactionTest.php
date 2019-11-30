@@ -64,7 +64,7 @@ final class DoctrineDBALTransactionTest extends BaseTransactionTest
      */
     protected static function getAdapter(): DatabaseAdapter
     {
-        if (isset(self::$adapter) === false)
+        if (false === isset(self::$adapter))
         {
             self::$adapter = inMemoryAdapter();
         }

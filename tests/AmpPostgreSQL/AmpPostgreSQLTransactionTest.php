@@ -67,7 +67,7 @@ final class AmpPostgreSQLTransactionTest extends BaseTransactionTest
      */
     protected static function getAdapter(): DatabaseAdapter
     {
-        if (isset(self::$adapter) === false)
+        if (false === isset(self::$adapter))
         {
             self::$adapter = postgreSqlAdapterFactory((string) \getenv('TEST_POSTGRES_DSN'));
         }
