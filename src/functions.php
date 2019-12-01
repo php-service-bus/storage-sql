@@ -39,7 +39,7 @@ use ServiceBus\Storage\Common\ResultSet;
 function fetchAll(ResultSet $iterator): Promise
 {
     return call(
-        static function(ResultSet $iterator): \Generator
+        static function (ResultSet $iterator): \Generator
         {
             $array = [];
 
@@ -67,7 +67,7 @@ function fetchAll(ResultSet $iterator): Promise
 function fetchOne(ResultSet $iterator): Promise
 {
     return call(
-        static function(ResultSet $iterator): \Generator
+        static function (ResultSet $iterator): \Generator
         {
             /** @var array $collection */
             $collection   = yield fetchAll($iterator);
@@ -111,7 +111,7 @@ function fetchOne(ResultSet $iterator): Promise
 function find(QueryExecutor $queryExecutor, string $tableName, array $criteria = [], ?int $limit = null, array $orderBy = []): Promise
 {
     return call(
-        static function(string $tableName, array $criteria, ?int $limit, array $orderBy) use ($queryExecutor): \Generator
+        static function (string $tableName, array $criteria, ?int $limit, array $orderBy) use ($queryExecutor): \Generator
         {
             /**
              * @var string $query
@@ -152,7 +152,7 @@ function remove(QueryExecutor $queryExecutor, string $tableName, array $criteria
      * @psalm-suppress MixedArgument
      */
     return call(
-        static function(string $tableName, array $criteria) use ($queryExecutor): \Generator
+        static function (string $tableName, array $criteria) use ($queryExecutor): \Generator
         {
             /**
              * @var string $query
@@ -382,7 +382,7 @@ function getObjectVars(object $object): array
 {
     /** @var \Closure $closure */
     $closure = \Closure::bind(
-        function(): array
+        function (): array
         {
             /** @var object $this */
             return \get_object_vars($this);

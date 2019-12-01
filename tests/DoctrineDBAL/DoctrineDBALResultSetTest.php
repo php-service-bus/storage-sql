@@ -71,7 +71,7 @@ final class DoctrineDBALResultSetTest extends TestCase
 
         wait(
             call(
-                static function() use ($adapter): \Generator
+                static function () use ($adapter): \Generator
                 {
                     yield $adapter->execute(
                         'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)',
@@ -109,7 +109,7 @@ final class DoctrineDBALResultSetTest extends TestCase
 
         wait(
             call(
-                static function() use ($adapter): \Generator
+                static function () use ($adapter): \Generator
                 {
                     yield $adapter->execute(
                         'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)',
@@ -139,7 +139,7 @@ final class DoctrineDBALResultSetTest extends TestCase
 
         wait(
             call(
-                static function() use ($adapter): \Generator
+                static function () use ($adapter): \Generator
                 {
                     $result = yield fetchAll(yield $adapter->execute('SELECT * FROM test_result_set'));
 
@@ -161,7 +161,7 @@ final class DoctrineDBALResultSetTest extends TestCase
 
         wait(
             call(
-                static function() use ($adapter): \Generator
+                static function () use ($adapter): \Generator
                 {
                     yield $adapter->execute(
                         'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)',

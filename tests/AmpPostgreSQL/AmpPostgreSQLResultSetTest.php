@@ -89,7 +89,7 @@ final class AmpPostgreSQLResultSetTest extends TestCase
     {
         wait(
             call(
-                static function(): \Generator
+                static function (): \Generator
                 {
                     $uuid1 = '3b5f80dd-0d14-4f8e-9684-0320dc35d3fd';
                     $uuid2 = 'ad1278ad-031a-45e0-aa04-2a03e143d438';
@@ -132,7 +132,7 @@ final class AmpPostgreSQLResultSetTest extends TestCase
     {
         wait(
             call(
-                static function(): \Generator
+                static function (): \Generator
                 {
                     yield self::$adapter->execute(
                         'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)',
@@ -160,7 +160,7 @@ final class AmpPostgreSQLResultSetTest extends TestCase
     {
         wait(
             call(
-                static function(): \Generator
+                static function (): \Generator
                 {
                     $result = yield fetchAll(yield self::$adapter->execute('SELECT * FROM test_result_set'));
 
@@ -180,7 +180,7 @@ final class AmpPostgreSQLResultSetTest extends TestCase
     {
         wait(
             call(
-                static function(): \Generator
+                static function (): \Generator
                 {
                     yield self::$adapter->execute(
                         'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)',
@@ -214,7 +214,7 @@ final class AmpPostgreSQLResultSetTest extends TestCase
     {
         wait(
             call(
-                static function(): \Generator
+                static function (): \Generator
                 {
                     /** @var \ServiceBus\Storage\Common\ResultSet $result */
                     $result = yield self::$adapter->execute('DELETE FROM test_result_set');

@@ -110,7 +110,7 @@ class AmpPostgreSQLResultSet implements ResultSet
     public function lastInsertId(?string $sequence = null): Promise
     {
         return call(
-            function(): \Generator
+            function (): \Generator
             {
                 try
                 {

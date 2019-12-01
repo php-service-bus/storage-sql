@@ -80,7 +80,7 @@ abstract class BaseStorageAdapterTest extends TestCase
 
         wait(
             call(
-                static function() use ($adapter): \Generator
+                static function () use ($adapter): \Generator
                 {
                     $data = \sha1(\random_bytes(256));
 
@@ -120,7 +120,7 @@ abstract class BaseStorageAdapterTest extends TestCase
 
         wait(
             call(
-                static function() use ($adapter): \Generator
+                static function () use ($adapter): \Generator
                 {
                     $data = \sha1(\random_bytes(256));
 
@@ -158,7 +158,7 @@ abstract class BaseStorageAdapterTest extends TestCase
     {
         wait(
             call(
-                static function(): \Generator
+                static function (): \Generator
                 {
                     $adapter = static::getAdapter();
 
@@ -183,7 +183,7 @@ abstract class BaseStorageAdapterTest extends TestCase
 
         wait(
             call(
-                static function(): \Generator
+                static function (): \Generator
                 {
                     yield  find(static::getAdapter(), 'asegfseg');
                 }
@@ -202,7 +202,7 @@ abstract class BaseStorageAdapterTest extends TestCase
 
         wait(
             call(
-                static function() use ($adapter): \Generator
+                static function () use ($adapter): \Generator
                 {
                     yield self::importFixtures($adapter);
 
@@ -235,7 +235,7 @@ abstract class BaseStorageAdapterTest extends TestCase
 
         wait(
             call(
-                static function() use ($adapter): \Generator
+                static function () use ($adapter): \Generator
                 {
                     /** @var \ServiceBus\Storage\Common\ResultSet $iterator */
                     $iterator = yield $adapter->execute(
@@ -266,7 +266,7 @@ abstract class BaseStorageAdapterTest extends TestCase
 
         wait(
             call(
-                static function() use ($adapter): \Generator
+                static function () use ($adapter): \Generator
                 {
                     yield self::importFixtures($adapter);
 
@@ -292,7 +292,7 @@ abstract class BaseStorageAdapterTest extends TestCase
 
         wait(
             call(
-                static function() use ($adapter): \Generator
+                static function () use ($adapter): \Generator
                 {
                     yield $adapter->execute(
                         'INSERT INTO storage_test_table (id, identifier_class) VALUES (?, ?), (?, ?)',
@@ -317,7 +317,7 @@ abstract class BaseStorageAdapterTest extends TestCase
 
         wait(
             call(
-                static function() use ($adapter): \Generator
+                static function () use ($adapter): \Generator
                 {
                     /** @var \ServiceBus\Storage\Common\ResultSet $result */
                     $result = yield $adapter->execute(

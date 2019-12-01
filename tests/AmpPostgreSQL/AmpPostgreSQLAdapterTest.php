@@ -97,7 +97,7 @@ final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
 
         wait(
             call(
-                static function() use ($adapter): \Generator
+                static function () use ($adapter): \Generator
                 {
                     /** @var \ServiceBus\Storage\Common\ResultSet $result */
                     $result = yield $adapter->execute('INSERT INTO test_ai (value) VALUES (\'qwerty\') RETURNING id');
@@ -128,7 +128,7 @@ final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
 
         wait(
             call(
-                static function() use ($adapter): \Generator
+                static function () use ($adapter): \Generator
                 {
                     yield $adapter->execute('SELECT now()');
                 }

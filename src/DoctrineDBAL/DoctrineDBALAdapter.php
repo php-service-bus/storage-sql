@@ -87,7 +87,7 @@ final class DoctrineDBALAdapter implements DatabaseAdapter
     public function transactional(callable $function): Promise
     {
         return call(
-            function() use ($function): \Generator
+            function () use ($function): \Generator
             {
                 /** @var \ServiceBus\Storage\Common\Transaction $transaction */
                 $transaction = yield $this->transaction();

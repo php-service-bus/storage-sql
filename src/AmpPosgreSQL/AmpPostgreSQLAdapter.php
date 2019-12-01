@@ -73,7 +73,7 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
         /** @psalm-suppress InvalidArgument */
         return call(
         /** @psalm-return AmpPostgreSQLResultSet */
-            static function(string $queryString, array $parameters = []) use ($pool, $logger): \Generator
+            static function (string $queryString, array $parameters = []) use ($pool, $logger): \Generator
             {
                 try
                 {
@@ -104,7 +104,7 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
         $logger = $this->logger;
 
         return call(
-            static function() use ($pool, $logger, $function): \Generator
+            static function () use ($pool, $logger, $function): \Generator
             {
                 /** @var \Amp\Postgres\Transaction $originalTransaction  */
                 $originalTransaction = yield $pool->beginTransaction();
@@ -147,7 +147,7 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
         $logger = $this->logger;
 
         return call(
-            static function() use ($pool, $logger): \Generator
+            static function () use ($pool, $logger): \Generator
             {
                 try
                 {

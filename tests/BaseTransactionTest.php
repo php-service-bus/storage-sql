@@ -63,7 +63,7 @@ abstract class BaseTransactionTest extends TestCase
 
         wait(
             call(
-                static function() use ($adapter): \Generator
+                static function () use ($adapter): \Generator
                 {
                     /** @var \ServiceBus\Storage\Common\Transaction $transaction */
                     $transaction = yield  $adapter->transaction();
@@ -100,10 +100,10 @@ abstract class BaseTransactionTest extends TestCase
 
         wait(
             call(
-                static function() use ($adapter): \Generator
+                static function () use ($adapter): \Generator
                 {
                     yield $adapter->transactional(
-                        static function(QueryExecutor $executor): \Generator
+                        static function (QueryExecutor $executor): \Generator
                         {
                             yield $executor->execute(
                                 'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)',
@@ -135,7 +135,7 @@ abstract class BaseTransactionTest extends TestCase
 
         wait(
             call(
-                static function() use ($adapter): \Generator
+                static function () use ($adapter): \Generator
                 {
                     $uuid = 'cb9f20de-6a8e-4934-84b4-71da78e42697';
 
@@ -172,7 +172,7 @@ abstract class BaseTransactionTest extends TestCase
 
         wait(
             call(
-                static function() use ($adapter): \Generator
+                static function () use ($adapter): \Generator
                 {
                     /** @var \ServiceBus\Storage\Common\Transaction $transaction */
                     $transaction = yield $adapter->transaction();
@@ -210,10 +210,10 @@ abstract class BaseTransactionTest extends TestCase
 
         wait(
             call(
-                static function() use ($adapter): \Generator
+                static function () use ($adapter): \Generator
                 {
                     yield $adapter->transactional(
-                        static function(Transaction $transaction): \Generator
+                        static function (Transaction $transaction): \Generator
                         {
                             $uuid = 'cb9f20de-6a8e-4934-84b4-71da78e42697';
 

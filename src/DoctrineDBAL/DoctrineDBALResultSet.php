@@ -26,16 +26,12 @@ final class DoctrineDBALResultSet implements ResultSet
     /**
      * Last row emitted.
      */
-    private ?array
-
- $currentRow;
+    private ?array $currentRow;
 
     /**
      * Pdo fetch result.
      */
-    private array
-
- $fetchResult;
+    private array $fetchResult;
 
     /**
      * Results count.

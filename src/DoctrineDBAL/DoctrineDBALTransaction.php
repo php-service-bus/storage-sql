@@ -79,7 +79,7 @@ final class DoctrineDBALTransaction implements Transaction
          * @psalm-suppress MixedTypeCoercion
          */
         return call(
-            function(): void
+            function (): void
             {
                 try
                 {
@@ -107,7 +107,7 @@ final class DoctrineDBALTransaction implements Transaction
          * @psalm-suppress MixedTypeCoercion
          */
         return call(
-            function(): void
+            function (): void
             {
                 try
                 {

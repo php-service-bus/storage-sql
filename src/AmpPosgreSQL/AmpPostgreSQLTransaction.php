@@ -56,7 +56,7 @@ final class AmpPostgreSQLTransaction implements Transaction
         /** @psalm-suppress InvalidArgument */
         return call(
         /** @psalm-return AmpPostgreSQLResultSet */
-           static function(string $queryString, array $parameters = []) use ($transaction, $logger): \Generator
+           static function (string $queryString, array $parameters = []) use ($transaction, $logger): \Generator
            {
                try
                {
@@ -87,7 +87,7 @@ final class AmpPostgreSQLTransaction implements Transaction
         $logger = $this->logger;
 
         return call(
-            static function() use ($transaction, $logger): \Generator
+            static function () use ($transaction, $logger): \Generator
             {
                 try
                 {
@@ -116,7 +116,7 @@ final class AmpPostgreSQLTransaction implements Transaction
         $logger = $this->logger;
 
         return call(
-            static function() use ($transaction, $logger): \Generator
+            static function () use ($transaction, $logger): \Generator
             {
                 try
                 {
