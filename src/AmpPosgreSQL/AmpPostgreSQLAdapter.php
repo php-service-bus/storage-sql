@@ -31,7 +31,7 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
 {
     private StorageConfiguration $configuration;
 
-    private ?Pool $pool;
+    private ?Pool $pool = null;
 
     private LoggerInterface $logger;
 
@@ -41,7 +41,7 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
     public function __construct(StorageConfiguration $configuration, ?LoggerInterface $logger = null)
     {
         // @codeCoverageIgnoreStart
-        if (false === \extension_loaded('pgsql'))
+        if (\extension_loaded('pgsql') === false)
         {
             throw new InvalidConfigurationOptions('ext-pgsql must be installed');
         }
@@ -54,15 +54,13 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
     public function __destruct()
     {
         /** @psalm-suppress RedundantConditionGivenDocblockType Null in case of error */
-        if (isset($this->pool))
+        if ($this->pool !== null)
         {
             $this->pool->close();
         }
     }
 
     /**
-     * @psalm-suppress MixedTypeCoercion
-     *
      * {@inheritdoc}
      */
     public function execute(string $queryString, array $parameters = []): Promise
@@ -79,6 +77,7 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
                 {
                     $logger->debug($queryString, $parameters);
 
+                    /** @psalm-suppress TooManyTemplateParams */
                     return new AmpPostgreSQLResultSet(
                         yield $pool->execute($queryString, $parameters)
                     );
@@ -94,8 +93,6 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
     }
 
     /**
-     * @psalm-suppress MixedTypeCoercion
-     *
      * {@inheritdoc}
      */
     public function transactional(callable $function): Promise
@@ -106,7 +103,11 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
         return call(
             static function () use ($pool, $logger, $function): \Generator
             {
-                /** @var \Amp\Postgres\Transaction $originalTransaction  */
+                /**
+                 * @psalm-suppress TooManyTemplateParams
+                 *
+                 * @var \Amp\Postgres\Transaction $originalTransaction
+                 */
                 $originalTransaction = yield $pool->beginTransaction();
 
                 $transaction = new AmpPostgreSQLTransaction($originalTransaction, $logger);
@@ -120,6 +121,7 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
 
                     yield new Coroutine($generator);
 
+                    /** @psalm-suppress TooManyTemplateParams */
                     yield $transaction->commit();
                 }
                 catch (\Throwable $throwable)
@@ -137,8 +139,6 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
     }
 
     /**
-     * @psalm-suppress MixedTypeCoercion
-     *
      * {@inheritdoc}
      */
     public function transaction(): Promise
@@ -153,7 +153,11 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
                 {
                     $logger->debug('BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED');
 
-                    /** @var \Amp\Postgres\Transaction $transaction */
+                    /**
+                     * @psalm-suppress TooManyTemplateParams
+                     *
+                     * @var \Amp\Postgres\Transaction $transaction
+                     */
                     $transaction = yield $pool->beginTransaction();
 
                     return new AmpPostgreSQLTransaction($transaction, $logger);
@@ -173,7 +177,7 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
      */
     public function unescapeBinary($payload): string
     {
-        if (true === \is_resource($payload))
+        if (\is_resource($payload) === true)
         {
             $payload = \stream_get_contents($payload, -1, 0);
         }
@@ -186,7 +190,7 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
      */
     private function pool(): Pool
     {
-        if (false === isset($this->pool))
+        if ($this->pool === null)
         {
             $queryData = $this->configuration->queryParameters;
 

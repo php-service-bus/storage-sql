@@ -30,11 +30,9 @@ use ServiceBus\Storage\Common\ResultSet;
  * Collect iterator data
  * Not recommended for use on large amounts of data.
  *
- * @psalm-suppress MixedTypeCoercion Incorrect resolving the value of the promise
+ * Returns array<int, mixed>
  *
  * @throws \ServiceBus\Storage\Common\Exceptions\ResultSetIterationFailed
- *
- * @return Promise<array<int, mixed>>
  */
 function fetchAll(ResultSet $iterator): Promise
 {
@@ -57,12 +55,10 @@ function fetchAll(ResultSet $iterator): Promise
 /**
  * Extract 1 result.
  *
- * @psalm-suppress MixedTypeCoercion Incorrect resolving the value of the promise
+ * Returns array<string, mixed>|null
  *
  * @throws \ServiceBus\Storage\Common\Exceptions\ResultSetIterationFailed
  * @throws \ServiceBus\Storage\Common\Exceptions\OneResultExpected The result must contain only 1 row
- *
- * @return Promise<array<string, mixed>|null>
  */
 function fetchOne(ResultSet $iterator): Promise
 {
@@ -95,6 +91,8 @@ function fetchOne(ResultSet $iterator): Promise
 /**
  * Create & execute SELECT query.
  *
+ * Returns \ServiceBus\Storage\Common\ResultSet
+ *
  * @psalm-param    array<mixed, \Latitude\QueryBuilder\CriteriaInterface> $criteria
  * @psalm-param    array<string, string> $orderBy
  * @psalm-suppress MixedTypeCoercion
@@ -105,8 +103,6 @@ function fetchOne(ResultSet $iterator): Promise
  * @throws \ServiceBus\Storage\Common\Exceptions\InvalidConfigurationOptions
  * @throws \ServiceBus\Storage\Common\Exceptions\StorageInteractingFailed Basic type of interaction errors
  * @throws \ServiceBus\Storage\Common\Exceptions\UniqueConstraintViolationCheckFailed
- *
- * @return Promise<\ServiceBus\Storage\Common\ResultSet>
  */
 function find(QueryExecutor $queryExecutor, string $tableName, array $criteria = [], ?int $limit = null, array $orderBy = []): Promise
 {
@@ -132,6 +128,8 @@ function find(QueryExecutor $queryExecutor, string $tableName, array $criteria =
 /**
  * Create & execute DELETE query.
  *
+ * Returns int
+ *
  * @psalm-param    array<mixed, \Latitude\QueryBuilder\CriteriaInterface> $criteria
  * @psalm-suppress MixedTypeCoercion
  *
@@ -142,8 +140,6 @@ function find(QueryExecutor $queryExecutor, string $tableName, array $criteria =
  * @throws \ServiceBus\Storage\Common\Exceptions\StorageInteractingFailed Basic type of interaction errors
  * @throws \ServiceBus\Storage\Common\Exceptions\UniqueConstraintViolationCheckFailed
  * @throws \ServiceBus\Storage\Common\Exceptions\ResultSetIterationFailed
- *
- * @return Promise<int>
  */
 function remove(QueryExecutor $queryExecutor, string $tableName, array $criteria = []): Promise
 {

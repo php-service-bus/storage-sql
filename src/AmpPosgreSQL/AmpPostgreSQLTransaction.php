@@ -37,15 +37,13 @@ final class AmpPostgreSQLTransaction implements Transaction
 
     public function __destruct()
     {
-        if (true === $this->transaction->isAlive())
+        if ($this->transaction->isAlive() === true)
         {
             $this->transaction->close();
         }
     }
 
     /**
-     * @psalm-suppress MixedTypeCoercion
-     *
      * {@inheritdoc}
      */
     public function execute(string $queryString, array $parameters = []): Promise
@@ -62,6 +60,7 @@ final class AmpPostgreSQLTransaction implements Transaction
                {
                    $logger->debug($queryString, $parameters);
 
+                   /** @psalm-suppress TooManyTemplateParams */
                    return new AmpPostgreSQLResultSet(
                        yield $transaction->execute($queryString, $parameters)
                    );
@@ -93,6 +92,7 @@ final class AmpPostgreSQLTransaction implements Transaction
                 {
                     $logger->debug('COMMIT');
 
+                    /** @psalm-suppress TooManyTemplateParams */
                     yield $transaction->commit();
 
                     $transaction->close();
@@ -122,6 +122,7 @@ final class AmpPostgreSQLTransaction implements Transaction
                 {
                     $logger->debug('ROLLBACK');
 
+                    /** @psalm-suppress TooManyTemplateParams */
                     yield $transaction->rollback();
                 }
                 // @codeCoverageIgnoreStart

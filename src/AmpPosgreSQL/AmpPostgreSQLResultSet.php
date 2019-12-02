@@ -50,8 +50,6 @@ class AmpPostgreSQLResultSet implements ResultSet
     }
 
     /**
-     * @psalm-suppress MixedTypeCoercion
-     *
      * {@inheritdoc}
      */
     public function advance(): Promise
@@ -62,6 +60,7 @@ class AmpPostgreSQLResultSet implements ResultSet
         {
             if ($this->originalResultSet instanceof AmpResultSet)
             {
+                /** @psalm-suppress TooManyTemplateParams */
                 return $this->originalResultSet->advance();
             }
 
@@ -103,8 +102,6 @@ class AmpPostgreSQLResultSet implements ResultSet
     }
 
     /**
-     * @psalm-suppress MixedTypeCoercion
-     *
      * {@inheritdoc}
      */
     public function lastInsertId(?string $sequence = null): Promise
@@ -118,6 +115,7 @@ class AmpPostgreSQLResultSet implements ResultSet
                     {
                         if (false === $this->advanceCalled)
                         {
+                            /** @psalm-suppress TooManyTemplateParams */
                             yield $this->originalResultSet->advance();
 
                             $this->advanceCalled = true;

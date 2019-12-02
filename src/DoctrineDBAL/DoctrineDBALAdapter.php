@@ -34,7 +34,7 @@ final class DoctrineDBALAdapter implements DatabaseAdapter
 {
     private StorageConfiguration $configuration;
 
-    private ?Connection $connection;
+    private ?Connection $connection = null;
 
     private LoggerInterface $logger;
 
@@ -45,8 +45,6 @@ final class DoctrineDBALAdapter implements DatabaseAdapter
     }
 
     /**
-     * @psalm-suppress MixedTypeCoercion
-     *
      * {@inheritdoc}
      */
     public function execute(string $queryString, array $parameters = []): Promise
@@ -58,7 +56,7 @@ final class DoctrineDBALAdapter implements DatabaseAdapter
             $statement = $this->connection()->prepare($queryString);
             $isSuccess = $statement->execute($parameters);
 
-            if (false === $isSuccess)
+            if ($isSuccess === false)
             {
                 // @codeCoverageIgnoreStart
                 /** @var array{0:string, 1:int, 2:string} $errorInfo */
@@ -80,8 +78,6 @@ final class DoctrineDBALAdapter implements DatabaseAdapter
     }
 
     /**
-     * @psalm-suppress MixedTypeCoercion
-     *
      * {@inheritdoc}
      */
     public function transactional(callable $function): Promise
@@ -116,8 +112,6 @@ final class DoctrineDBALAdapter implements DatabaseAdapter
     }
 
     /**
-     * @psalm-suppress MixedTypeCoercion
-     *
      * {@inheritdoc}
      */
     public function transaction(): Promise
@@ -145,11 +139,11 @@ final class DoctrineDBALAdapter implements DatabaseAdapter
     public function unescapeBinary($payload): string
     {
         /** @var resource|string $payload */
-        if (true === \is_resource($payload))
+        if (\is_resource($payload) === true)
         {
             $result = \stream_get_contents($payload, -1, 0);
 
-            if (false !== $result)
+            if ($result !== false)
             {
                 return $result;
             }
@@ -165,7 +159,7 @@ final class DoctrineDBALAdapter implements DatabaseAdapter
      */
     private function connection(): Connection
     {
-        if (false === isset($this->connection))
+        if ($this->connection === null)
         {
             try
             {

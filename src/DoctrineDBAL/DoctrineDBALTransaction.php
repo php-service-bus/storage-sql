@@ -36,8 +36,6 @@ final class DoctrineDBALTransaction implements Transaction
     }
 
     /**
-     * @psalm-suppress MixedTypeCoercion
-     *
      * {@inheritdoc}
      */
     public function execute(string $queryString, array $parameters = []): Promise

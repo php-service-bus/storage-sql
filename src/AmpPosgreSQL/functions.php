@@ -28,7 +28,7 @@ function adaptAmpThrowable(\Throwable $throwable): \Throwable
 {
     if (
         $throwable instanceof QueryExecutionError &&
-        true === \in_array((int) $throwable->getDiagnostics()['sqlstate'], [23503, 23505], true)
+        \in_array((int) $throwable->getDiagnostics()['sqlstate'], [23503, 23505], true) === true
     ) {
         return new InternalExceptions\UniqueConstraintViolationCheckFailed(
             $throwable->getMessage(),
