@@ -24,9 +24,9 @@ use ServiceBus\Storage\Sql\Tests\BaseTransactionTest;
 final class AmpPostgreSQLTransactionTest extends BaseTransactionTest
 {
     /**
-     * @var AmpPostgreSQLAdapter
+     * @var AmpPostgreSQLAdapter|null
      */
-    private static AmpPostgreSQLAdapter $adapter;
+    private static $adapter = null;
 
     /**
      * {@inheritdoc}

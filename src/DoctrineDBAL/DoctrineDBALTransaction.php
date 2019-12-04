@@ -25,9 +25,11 @@ use ServiceBus\Storage\Common\Transaction;
  */
 final class DoctrineDBALTransaction implements Transaction
 {
-    private Connection $connection;
+    /** @var Connection */
+    private $connection;
 
-    private LoggerInterface $logger;
+    /** @var LoggerInterface */
+    private $logger;
 
     public function __construct(Connection $connection, LoggerInterface $logger)
     {
@@ -47,7 +49,7 @@ final class DoctrineDBALTransaction implements Transaction
             $statement = $this->connection->prepare($queryString);
             $isSuccess = $statement->execute($parameters);
 
-            if (false === $isSuccess)
+            if ($isSuccess === false)
             {
                 // @codeCoverageIgnoreStart
                 /** @var string $message Driver-specific error message */
@@ -129,7 +131,7 @@ final class DoctrineDBALTransaction implements Transaction
     public function unescapeBinary($payload): string
     {
         /** @var resource|string $payload */
-        if (true === \is_resource($payload))
+        if (\is_resource($payload) === true)
         {
             $result = \stream_get_contents($payload, -1, 0);
 

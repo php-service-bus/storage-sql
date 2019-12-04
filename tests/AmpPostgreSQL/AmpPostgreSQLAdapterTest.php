@@ -12,7 +12,6 @@ declare(strict_types = 1);
 
 namespace ServiceBus\Storage\Sql\Tests\AmpPostgreSQL;
 
-use function Amp\call;
 use function Amp\Promise\wait;
 use function ServiceBus\Storage\Sql\AmpPosgreSQL\postgreSqlAdapterFactory;
 use ServiceBus\Storage\Common\DatabaseAdapter;
@@ -26,7 +25,8 @@ use ServiceBus\Storage\Sql\Tests\BaseStorageAdapterTest;
  */
 final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
 {
-    private static AmpPostgreSQLAdapter $adapter;
+    /** @var AmpPostgreSQLAdapter|null */
+    private static $adapter = null;
 
     public static function setUpBeforeClass(): void
     {
@@ -91,26 +91,19 @@ final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
      *
      * @throws \Throwable
      */
-    public function lastInsertId(): void
+    public function lastInsertId(): \Generator
     {
         $adapter = static::getAdapter();
 
-        wait(
-            call(
-                static function () use ($adapter): \Generator
-                {
-                    /** @var \ServiceBus\Storage\Common\ResultSet $result */
-                    $result = yield $adapter->execute('INSERT INTO test_ai (value) VALUES (\'qwerty\') RETURNING id');
+        /** @var \ServiceBus\Storage\Common\ResultSet $result */
+        $result = yield $adapter->execute('INSERT INTO test_ai (value) VALUES (\'qwerty\') RETURNING id');
 
-                    static::assertSame('1', yield $result->lastInsertId());
+        static::assertSame('1', yield $result->lastInsertId());
 
-                    /** @var \ServiceBus\Storage\Common\ResultSet $result */
-                    $result = yield $adapter->execute('INSERT INTO test_ai (value) VALUES (\'qwerty\') RETURNING id');
+        /** @var \ServiceBus\Storage\Common\ResultSet $result */
+        $result = yield $adapter->execute('INSERT INTO test_ai (value) VALUES (\'qwerty\') RETURNING id');
 
-                    static::assertSame('2', yield $result->lastInsertId());
-                }
-            )
-        );
+        static::assertSame('2', yield $result->lastInsertId());
     }
 
     /**
@@ -118,7 +111,7 @@ final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
      *
      * @throws \Throwable
      */
-    public function failedConnection(): void
+    public function failedConnection(): \Generator
     {
         $this->expectException(ConnectionFailed::class);
 
@@ -126,13 +119,6 @@ final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
             new StorageConfiguration('qwerty')
         );
 
-        wait(
-            call(
-                static function () use ($adapter): \Generator
-                {
-                    yield $adapter->execute('SELECT now()');
-                }
-            )
-        );
+        yield $adapter->execute('SELECT now()');
     }
 }

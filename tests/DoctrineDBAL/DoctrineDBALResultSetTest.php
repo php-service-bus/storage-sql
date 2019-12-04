@@ -26,7 +26,8 @@ use ServiceBus\Storage\Sql\DoctrineDBAL\DoctrineDBALAdapter;
  */
 final class DoctrineDBALResultSetTest extends TestCase
 {
-    private DoctrineDBALAdapter $adapter;
+    /** @var DoctrineDBALAdapter  */
+    private $adapter;
 
     /**
      * {@inheritdoc}

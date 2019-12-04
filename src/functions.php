@@ -195,7 +195,7 @@ function buildQuery(
     /** @var \Latitude\QueryBuilder\CriteriaInterface $criteriaItem */
     foreach ($criteria as $criteriaItem)
     {
-        $methodName = true === $isFirstCondition ? 'where' : 'andWhere';
+        $methodName =  $isFirstCondition === true ? 'where' : 'andWhere';
         $queryBuilder->{$methodName}($criteriaItem);
         $isFirstCondition = false;
     }
@@ -236,14 +236,14 @@ function unescapeBinary(QueryExecutor $queryExecutor, $data)
 {
     if ($queryExecutor instanceof BinaryDataDecoder)
     {
-        if (false === \is_array($data))
+        if (\is_array($data) === false)
         {
             return $queryExecutor->unescapeBinary((string) $data);
         }
 
         foreach ($data as $key => $value)
         {
-            if (false === empty($value) && true === \is_string($value))
+            if (empty($value) === false && \is_string($value) === true)
             {
                 $data[$key] = $queryExecutor->unescapeBinary($value);
             }
@@ -262,7 +262,7 @@ function unescapeBinary(QueryExecutor $queryExecutor, $data)
  */
 function equalsCriteria(string $field, $value): CriteriaInterface
 {
-    if (true === \is_object($value))
+    if (\is_object($value)=== true)
     {
         $value = castObjectToString($value);
     }
@@ -279,7 +279,7 @@ function equalsCriteria(string $field, $value): CriteriaInterface
  */
 function notEqualsCriteria(string $field, $value): CriteriaInterface
 {
-    if (true === \is_object($value))
+    if (\is_object($value)=== true)
     {
         $value = castObjectToString($value);
     }
@@ -316,7 +316,7 @@ function selectQuery(string $fromTable, string ...$columns): LatitudeQuery\Selec
  */
 function updateQuery(string $tableName, $toUpdate): LatitudeQuery\UpdateQuery
 {
-    $values = true === \is_object($toUpdate) ? castObjectToArray($toUpdate) : $toUpdate;
+    $values = \is_object($toUpdate) === true? castObjectToArray($toUpdate) : $toUpdate;
 
     return queryBuilder()->update($tableName, $values);
 }
@@ -340,7 +340,7 @@ function deleteQuery(string $fromTable): LatitudeQuery\DeleteQuery
  */
 function insertQuery(string $toTable, $toInsert): LatitudeQuery\InsertQuery
 {
-    $rows = true === \is_object($toInsert) ? castObjectToArray($toInsert) : $toInsert;
+    $rows =  \is_object($toInsert)=== true ? castObjectToArray($toInsert) : $toInsert;
 
     return queryBuilder()->insert($toTable, $rows);
 }
@@ -406,7 +406,7 @@ function toSnakeCase(string $string): string
 {
     $replaced = \preg_replace('/(?<!^)[A-Z]/', '_$0', $string);
 
-    if (true === \is_string($replaced))
+    if (\is_string($replaced)=== true)
     {
         return \strtolower($replaced);
     }
@@ -425,13 +425,13 @@ function toSnakeCase(string $string): string
  */
 function cast(string $key, $value)
 {
-    if (null === $value || true === \is_scalar($value))
+    if ($value === null ||  \is_scalar($value)=== true)
     {
         return $value;
     }
 
     /** @psalm-suppress RedundantConditionGivenDocblockType */
-    if (true === \is_object($value))
+    if (\is_object($value)=== true)
     {
         return castObjectToString($value);
     }
@@ -454,7 +454,7 @@ function cast(string $key, $value)
  */
 function castObjectToString(object $object): string
 {
-    if (true === \method_exists($object, '__toString'))
+    if (\method_exists($object, '__toString')=== true)
     {
         /** @psalm-suppress InvalidCast Object have __toString method */
         return (string) $object;

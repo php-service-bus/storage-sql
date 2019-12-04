@@ -35,7 +35,7 @@ class AmpPostgreSQLResultSet implements ResultSet
     /**
      * @var bool
      */
-    private bool $advanceCalled = false;
+    private $advanceCalled = false;
 
     /**
      * @noinspection   PhpDocSignatureInspection
@@ -113,7 +113,7 @@ class AmpPostgreSQLResultSet implements ResultSet
                 {
                     if ($this->originalResultSet instanceof PooledResultSet)
                     {
-                        if (false === $this->advanceCalled)
+                        if ($this->advanceCalled === false)
                         {
                             /** @psalm-suppress TooManyTemplateParams */
                             yield $this->originalResultSet->advance();

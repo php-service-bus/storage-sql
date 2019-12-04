@@ -25,33 +25,45 @@ final class DoctrineDBALResultSet implements ResultSet
 {
     /**
      * Last row emitted.
+     *
+     * @var array|null
      */
-    private ?array $currentRow;
+    private $currentRow;
 
     /**
      * Pdo fetch result.
+     *
+     * @var array
      */
-    private array $fetchResult;
+    private $fetchResult;
 
     /**
      * Results count.
+     *
+     * @var int
      */
-    private int $resultsCount;
+    private $resultsCount;
 
     /**
      * Current iterator position.
+     *
+     * @var int
      */
-    private int $currentPosition = 0;
+    private $currentPosition = 0;
 
     /**
      * Connection instance.
+     *
+     * @var Connection
      */
-    private Connection $connection;
+    private $connection;
 
     /**
      * Number of rows affected by the last DELETE, INSERT, or UPDATE statement.
+     *
+     * @var int
      */
-    private int $affectedRows;
+    private $affectedRows;
 
     public function __construct(Connection $connection, Statement $wrappedStmt)
     {
@@ -102,7 +114,7 @@ final class DoctrineDBALResultSet implements ResultSet
          */
         $data = $this->fetchResult[$this->currentPosition - 1] ?? null;
 
-        if (true === \is_array($data) && 0 === \count($data))
+        if (\is_array($data) === true && \count($data) === 0)
         {
             $data = null;
         }

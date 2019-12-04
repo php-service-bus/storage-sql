@@ -197,7 +197,7 @@ final class QueryBuilderFunctionsTest extends TestCase
 
         cast(
             'key',
-            function (): void
+            static function (): void
             {
             }
         );

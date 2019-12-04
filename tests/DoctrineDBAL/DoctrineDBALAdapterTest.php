@@ -27,7 +27,8 @@ use ServiceBus\Storage\Sql\Tests\BaseStorageAdapterTest;
  */
 final class DoctrineDBALAdapterTest extends BaseStorageAdapterTest
 {
-    private static DoctrineDBALAdapter $adapter;
+    /** @var DoctrineDBALAdapter|null  */
+    private static $adapter = null;
 
     /**
      * {@inheritdoc}

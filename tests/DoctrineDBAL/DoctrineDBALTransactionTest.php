@@ -23,7 +23,8 @@ use ServiceBus\Storage\Sql\Tests\BaseTransactionTest;
  */
 final class DoctrineDBALTransactionTest extends BaseTransactionTest
 {
-    private static DoctrineDBALAdapter $adapter;
+    /** @var DoctrineDBALAdapter|null */
+    private static $adapter = null;
 
     /**
      * {@inheritdoc}

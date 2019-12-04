@@ -25,9 +25,11 @@ use ServiceBus\Storage\Common\Transaction;
  */
 final class AmpPostgreSQLTransaction implements Transaction
 {
-    private AmpTransaction $transaction;
+    /** @var AmpTransaction */
+    private $transaction;
 
-    private LoggerInterface $logger;
+    /** @var LoggerInterface */
+    private $logger;
 
     public function __construct(AmpTransaction $transaction, LoggerInterface $logger)
     {
@@ -49,29 +51,29 @@ final class AmpPostgreSQLTransaction implements Transaction
     public function execute(string $queryString, array $parameters = []): Promise
     {
         $transaction = $this->transaction;
-        $logger = $this->logger;
+        $logger      = $this->logger;
 
         /** @psalm-suppress InvalidArgument */
         return call(
         /** @psalm-return AmpPostgreSQLResultSet */
-           static function (string $queryString, array $parameters = []) use ($transaction, $logger): \Generator
-           {
-               try
-               {
-                   $logger->debug($queryString, $parameters);
+            static function (string $queryString, array $parameters = []) use ($transaction, $logger): \Generator
+            {
+                try
+                {
+                    $logger->debug($queryString, $parameters);
 
-                   /** @psalm-suppress TooManyTemplateParams */
-                   return new AmpPostgreSQLResultSet(
-                       yield $transaction->execute($queryString, $parameters)
-                   );
-               }
-               // @codeCoverageIgnoreStart
-               catch (\Throwable $throwable)
-               {
-                   throw adaptAmpThrowable($throwable);
-               }
-               // @codeCoverageIgnoreEnd
-           },
+                    /** @psalm-suppress TooManyTemplateParams */
+                    return new AmpPostgreSQLResultSet(
+                        yield $transaction->execute($queryString, $parameters)
+                    );
+                }
+                // @codeCoverageIgnoreStart
+                catch (\Throwable $throwable)
+                {
+                    throw adaptAmpThrowable($throwable);
+                }
+                // @codeCoverageIgnoreEnd
+            },
             $queryString,
             $parameters
         );
@@ -83,7 +85,7 @@ final class AmpPostgreSQLTransaction implements Transaction
     public function commit(): Promise
     {
         $transaction = $this->transaction;
-        $logger = $this->logger;
+        $logger      = $this->logger;
 
         return call(
             static function () use ($transaction, $logger): \Generator
@@ -113,7 +115,7 @@ final class AmpPostgreSQLTransaction implements Transaction
     public function rollback(): Promise
     {
         $transaction = $this->transaction;
-        $logger = $this->logger;
+        $logger      = $this->logger;
 
         return call(
             static function () use ($transaction, $logger): \Generator
@@ -140,7 +142,7 @@ final class AmpPostgreSQLTransaction implements Transaction
      */
     public function unescapeBinary($payload): string
     {
-        if (true === \is_resource($payload))
+        if (\is_resource($payload) === true)
         {
             $payload = \stream_get_contents($payload, -1, 0);
         }
