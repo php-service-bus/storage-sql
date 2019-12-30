@@ -12,6 +12,7 @@ declare(strict_types = 1);
 
 namespace ServiceBus\Storage\Sql\Tests\AmpPostgreSQL;
 
+use Amp\Loop;
 use function Amp\Promise\wait;
 use function ServiceBus\Storage\Sql\AmpPosgreSQL\postgreSqlAdapterFactory;
 use function ServiceBus\Storage\Sql\fetchAll;
@@ -85,35 +86,40 @@ final class AmpPostgreSQLResultSetTest extends TestCase
      *
      * @throws \Throwable
      */
-    public function fetchOne(): \Generator
+    public function fetchOne(): void
     {
-        $uuid1 = '3b5f80dd-0d14-4f8e-9684-0320dc35d3fd';
-        $uuid2 = 'ad1278ad-031a-45e0-aa04-2a03e143d438';
+        Loop::run(
+            static function (): \Generator
+            {
+                $uuid1 = '3b5f80dd-0d14-4f8e-9684-0320dc35d3fd';
+                $uuid2 = 'ad1278ad-031a-45e0-aa04-2a03e143d438';
 
-        yield self::$adapter->execute(
-            'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)',
-            [
-                $uuid1, 'value1',
-                $uuid2, 'value2',
-            ]
+                yield self::$adapter->execute(
+                    'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)',
+                    [
+                        $uuid1, 'value1',
+                        $uuid2, 'value2',
+                    ]
+                );
+
+                $result = yield fetchOne(
+                    yield self::$adapter->execute(
+                        \sprintf('SELECT * FROM test_result_set WHERE id = \'%s\'', $uuid2)
+                    )
+                );
+
+                static::assertNotEmpty($result);
+                static:: assertSame(['id' => $uuid2, 'value' => 'value2'], $result);
+
+                $result = yield fetchOne(
+                    yield self::$adapter->execute(
+                        'SELECT * FROM test_result_set WHERE id = \'b4141f6e-a461-11e8-98d0-529269fb1459\''
+                    )
+                );
+
+                static::assertNull($result);
+            }
         );
-
-        $result = yield fetchOne(
-            yield self::$adapter->execute(
-                \sprintf('SELECT * FROM test_result_set WHERE id = \'%s\'', $uuid2)
-            )
-        );
-
-        static::assertNotEmpty($result);
-        static:: assertSame(['id' => $uuid2, 'value' => 'value2'], $result);
-
-        $result = yield fetchOne(
-            yield self::$adapter->execute(
-                'SELECT * FROM test_result_set WHERE id = \'b4141f6e-a461-11e8-98d0-529269fb1459\''
-            )
-        );
-
-        static::assertNull($result);
     }
 
     /**
@@ -121,20 +127,25 @@ final class AmpPostgreSQLResultSetTest extends TestCase
      *
      * @throws \Throwable
      */
-    public function fetchAll(): \Generator
+    public function fetchAll(): void
     {
-        yield self::$adapter->execute(
-            'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)',
-            [
-                'b922bda9-d2e5-4b41-b30d-e3b9a3717753', 'value1',
-                '3fdbbc08-c6bd-4fd9-b343-1c069c0d3044', 'value2',
-            ]
+        Loop::run(
+            static function (): \Generator
+            {
+                yield self::$adapter->execute(
+                    'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)',
+                    [
+                        'b922bda9-d2e5-4b41-b30d-e3b9a3717753', 'value1',
+                        '3fdbbc08-c6bd-4fd9-b343-1c069c0d3044', 'value2',
+                    ]
+                );
+
+                $result = yield fetchAll(yield self::$adapter->execute('SELECT * FROM test_result_set'));
+
+                static::assertNotEmpty($result);
+                static::assertCount(2, $result);
+            }
         );
-
-        $result = yield fetchAll(yield self::$adapter->execute('SELECT * FROM test_result_set'));
-
-        static::assertNotEmpty($result);
-        static::assertCount(2, $result);
     }
 
     /**
@@ -142,39 +153,17 @@ final class AmpPostgreSQLResultSetTest extends TestCase
      *
      * @throws \Throwable
      */
-    public function fetchAllWithEmptySet(): \Generator
+    public function fetchAllWithEmptySet(): void
     {
-        $result = yield fetchAll(yield self::$adapter->execute('SELECT * FROM test_result_set'));
+        Loop::run(
+            static function (): \Generator
+            {
+                $result = yield fetchAll(yield self::$adapter->execute('SELECT * FROM test_result_set'));
 
-        static::assertThat($result, new IsType('array'));
-        static::assertEmpty($result);
-    }
-
-    /**
-     * @test
-     *
-     * @throws \Throwable
-     */
-    public function multipleGetCurrentRow(): \Generator
-    {
-        yield self::$adapter->execute(
-            'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)',
-            [
-                '457e634c-6fef-4144-a5e4-76def3f51c10', 'value1',
-                'f4edd226-6fbf-499d-b6c4-b419560a7291', 'value2',
-            ]
+                static::assertThat($result, new IsType('array'));
+                static::assertEmpty($result);
+            }
         );
-
-        /** @var \ServiceBus\Storage\Common\ResultSet $result */
-        $result = yield self::$adapter->execute('SELECT * FROM test_result_set');
-
-        while (yield $result->advance())
-        {
-            $row     = $result->getCurrent();
-            $rowCopy = $result->getCurrent();
-
-            static::assertSame($row, $rowCopy);
-        }
     }
 
     /**
@@ -182,16 +171,53 @@ final class AmpPostgreSQLResultSetTest extends TestCase
      *
      * @throws \Throwable
      */
-    public function executeCommand(): \Generator
+    public function multipleGetCurrentRow(): void
     {
-        /** @var \ServiceBus\Storage\Common\ResultSet $result */
-        $result = yield self::$adapter->execute('DELETE FROM test_result_set');
+        Loop::run(
+            static function (): \Generator
+            {
+                yield self::$adapter->execute(
+                    'INSERT INTO test_result_set (id, value) VALUES (?,?), (?,?)',
+                    [
+                        '457e634c-6fef-4144-a5e4-76def3f51c10', 'value1',
+                        'f4edd226-6fbf-499d-b6c4-b419560a7291', 'value2',
+                    ]
+                );
 
-        while (yield $result->advance())
-        {
-            static::fail('Non empty cycle');
-        }
+                /** @var \ServiceBus\Storage\Common\ResultSet $result */
+                $result = yield self::$adapter->execute('SELECT * FROM test_result_set');
 
-        static::assertNull(yield $result->lastInsertId());
+                while (yield $result->advance())
+                {
+                    $row     = $result->getCurrent();
+                    $rowCopy = $result->getCurrent();
+
+                    static::assertSame($row, $rowCopy);
+                }
+            }
+        );
+    }
+
+    /**
+     * @test
+     *
+     * @throws \Throwable
+     */
+    public function executeCommand(): void
+    {
+        Loop::run(
+            static function (): \Generator
+            {
+                /** @var \ServiceBus\Storage\Common\ResultSet $result */
+                $result = yield self::$adapter->execute('DELETE FROM test_result_set');
+
+                while (yield $result->advance())
+                {
+                    static::fail('Non empty cycle');
+                }
+
+                static::assertNull(yield $result->lastInsertId());
+            }
+        );
     }
 }

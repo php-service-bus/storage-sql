@@ -12,6 +12,7 @@ declare(strict_types = 1);
 
 namespace ServiceBus\Storage\Sql\Tests\AmpPostgreSQL;
 
+use Amp\Loop;
 use function Amp\Promise\wait;
 use function ServiceBus\Storage\Sql\AmpPosgreSQL\postgreSqlAdapterFactory;
 use ServiceBus\Storage\Common\DatabaseAdapter;
@@ -91,19 +92,24 @@ final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
      *
      * @throws \Throwable
      */
-    public function lastInsertId(): \Generator
+    public function lastInsertId(): void
     {
-        $adapter = static::getAdapter();
+        Loop::run(
+            static function (): \Generator
+            {
+                $adapter = static::getAdapter();
 
-        /** @var \ServiceBus\Storage\Common\ResultSet $result */
-        $result = yield $adapter->execute('INSERT INTO test_ai (value) VALUES (\'qwerty\') RETURNING id');
+                /** @var \ServiceBus\Storage\Common\ResultSet $result */
+                $result = yield $adapter->execute('INSERT INTO test_ai (value) VALUES (\'qwerty\') RETURNING id');
 
-        static::assertSame('1', yield $result->lastInsertId());
+                static::assertSame('1', yield $result->lastInsertId());
 
-        /** @var \ServiceBus\Storage\Common\ResultSet $result */
-        $result = yield $adapter->execute('INSERT INTO test_ai (value) VALUES (\'qwerty\') RETURNING id');
+                /** @var \ServiceBus\Storage\Common\ResultSet $result */
+                $result = yield $adapter->execute('INSERT INTO test_ai (value) VALUES (\'qwerty\') RETURNING id');
 
-        static::assertSame('2', yield $result->lastInsertId());
+                static::assertSame('2', yield $result->lastInsertId());
+            }
+        );
     }
 
     /**
@@ -111,14 +117,19 @@ final class AmpPostgreSQLAdapterTest extends BaseStorageAdapterTest
      *
      * @throws \Throwable
      */
-    public function failedConnection(): \Generator
+    public function failedConnection(): void
     {
         $this->expectException(ConnectionFailed::class);
 
-        $adapter = new AmpPostgreSQLAdapter(
-            new StorageConfiguration('qwerty')
-        );
+        Loop::run(
+            static function (): \Generator
+            {
+                $adapter = new AmpPostgreSQLAdapter(
+                    new StorageConfiguration('qwerty')
+                );
 
-        yield $adapter->execute('SELECT now()');
+                yield $adapter->execute('SELECT now()');
+            }
+        );
     }
 }

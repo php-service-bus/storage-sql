@@ -37,7 +37,7 @@ use ServiceBus\Storage\Common\ResultSet;
 function fetchAll(ResultSet $iterator): Promise
 {
     return call(
-        static function (ResultSet $iterator): \Generator
+        static function () use ($iterator): \Generator
         {
             $array = [];
 
@@ -47,8 +47,7 @@ function fetchAll(ResultSet $iterator): Promise
             }
 
             return $array;
-        },
-        $iterator
+        }
     );
 }
 
@@ -63,7 +62,7 @@ function fetchAll(ResultSet $iterator): Promise
 function fetchOne(ResultSet $iterator): Promise
 {
     return call(
-        static function (ResultSet $iterator): \Generator
+        static function () use ($iterator): \Generator
         {
             /** @var array $collection */
             $collection   = yield fetchAll($iterator);
@@ -83,8 +82,7 @@ function fetchOne(ResultSet $iterator): Promise
                     $resultsCount
                 )
             );
-        },
-        $iterator
+        }
     );
 }
 
@@ -195,7 +193,7 @@ function buildQuery(
     /** @var \Latitude\QueryBuilder\CriteriaInterface $criteriaItem */
     foreach ($criteria as $criteriaItem)
     {
-        $methodName =  $isFirstCondition === true ? 'where' : 'andWhere';
+        $methodName = $isFirstCondition === true ? 'where' : 'andWhere';
         $queryBuilder->{$methodName}($criteriaItem);
         $isFirstCondition = false;
     }
@@ -262,7 +260,7 @@ function unescapeBinary(QueryExecutor $queryExecutor, $data)
  */
 function equalsCriteria(string $field, $value): CriteriaInterface
 {
-    if (\is_object($value)=== true)
+    if (\is_object($value) === true)
     {
         $value = castObjectToString($value);
     }
@@ -279,7 +277,7 @@ function equalsCriteria(string $field, $value): CriteriaInterface
  */
 function notEqualsCriteria(string $field, $value): CriteriaInterface
 {
-    if (\is_object($value)=== true)
+    if (\is_object($value) === true)
     {
         $value = castObjectToString($value);
     }
@@ -316,7 +314,7 @@ function selectQuery(string $fromTable, string ...$columns): LatitudeQuery\Selec
  */
 function updateQuery(string $tableName, $toUpdate): LatitudeQuery\UpdateQuery
 {
-    $values = \is_object($toUpdate) === true? castObjectToArray($toUpdate) : $toUpdate;
+    $values = \is_object($toUpdate) === true ? castObjectToArray($toUpdate) : $toUpdate;
 
     return queryBuilder()->update($tableName, $values);
 }
@@ -340,7 +338,7 @@ function deleteQuery(string $fromTable): LatitudeQuery\DeleteQuery
  */
 function insertQuery(string $toTable, $toInsert): LatitudeQuery\InsertQuery
 {
-    $rows =  \is_object($toInsert)=== true ? castObjectToArray($toInsert) : $toInsert;
+    $rows = \is_object($toInsert) === true ? castObjectToArray($toInsert) : $toInsert;
 
     return queryBuilder()->insert($toTable, $rows);
 }
@@ -406,7 +404,7 @@ function toSnakeCase(string $string): string
 {
     $replaced = \preg_replace('/(?<!^)[A-Z]/', '_$0', $string);
 
-    if (\is_string($replaced)=== true)
+    if (\is_string($replaced) === true)
     {
         return \strtolower($replaced);
     }
@@ -425,13 +423,13 @@ function toSnakeCase(string $string): string
  */
 function cast(string $key, $value)
 {
-    if ($value === null ||  \is_scalar($value)=== true)
+    if ($value === null || \is_scalar($value) === true)
     {
         return $value;
     }
 
     /** @psalm-suppress RedundantConditionGivenDocblockType */
-    if (\is_object($value)=== true)
+    if (\is_object($value) === true)
     {
         return castObjectToString($value);
     }
@@ -454,7 +452,7 @@ function cast(string $key, $value)
  */
 function castObjectToString(object $object): string
 {
-    if (\method_exists($object, '__toString')=== true)
+    if (\method_exists($object, '__toString') === true)
     {
         /** @psalm-suppress InvalidCast Object have __toString method */
         return (string) $object;

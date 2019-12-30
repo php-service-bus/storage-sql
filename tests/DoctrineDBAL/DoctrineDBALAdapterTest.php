@@ -12,6 +12,7 @@ declare(strict_types = 1);
 
 namespace ServiceBus\Storage\Sql\Tests\DoctrineDBAL;
 
+use Amp\Loop;
 use function Amp\call;
 use function Amp\Promise\wait;
 use function ServiceBus\Storage\Sql\DoctrineDBAL\inMemoryAdapter;
@@ -27,7 +28,7 @@ use ServiceBus\Storage\Sql\Tests\BaseStorageAdapterTest;
  */
 final class DoctrineDBALAdapterTest extends BaseStorageAdapterTest
 {
-    /** @var DoctrineDBALAdapter|null  */
+    /** @var DoctrineDBALAdapter|null */
     private static $adapter = null;
 
     /**
@@ -66,23 +67,21 @@ final class DoctrineDBALAdapterTest extends BaseStorageAdapterTest
      */
     public function lastInsertId(): void
     {
-        $adapter = static::getAdapter();
+        Loop::run(
+            static function (): \Generator
+            {
+                $adapter = static::getAdapter();
 
-        wait(
-            call(
-                static function () use ($adapter): \Generator
-                {
-                    /** @var \ServiceBus\Storage\Common\ResultSet $result */
-                    $result = yield $adapter->execute('INSERT INTO test_ai (value) VALUES (\'qwerty\')');
+                /** @var \ServiceBus\Storage\Common\ResultSet $result */
+                $result = yield $adapter->execute('INSERT INTO test_ai (value) VALUES (\'qwerty\')');
 
-                    static::assertSame('1', yield $result->lastInsertId());
+                static::assertSame('1', yield $result->lastInsertId());
 
-                    /** @var \ServiceBus\Storage\Common\ResultSet $result */
-                    $result = yield $adapter->execute('INSERT INTO test_ai (value) VALUES (\'qwerty\')');
+                /** @var \ServiceBus\Storage\Common\ResultSet $result */
+                $result = yield $adapter->execute('INSERT INTO test_ai (value) VALUES (\'qwerty\')');
 
-                    static::assertSame('2', yield $result->lastInsertId());
-                }
-            )
+                static::assertSame('2', yield $result->lastInsertId());
+            }
         );
     }
 
@@ -95,17 +94,15 @@ final class DoctrineDBALAdapterTest extends BaseStorageAdapterTest
     {
         $this->expectException(ConnectionFailed::class);
 
-        $adapter = new DoctrineDBALAdapter(
-            new StorageConfiguration('pgsql://localhost:4486/foo?charset=UTF-8')
-        );
+        Loop::run(
+            static function (): \Generator
+            {
+                $adapter = new DoctrineDBALAdapter(
+                    new StorageConfiguration('pgsql://localhost:4486/foo?charset=UTF-8')
+                );
 
-        wait(
-            call(
-                static function () use ($adapter): \Generator
-                {
-                    yield $adapter->execute('SELECT now()');
-                }
-            )
+                yield $adapter->execute('SELECT now()');
+            }
         );
     }
 
@@ -118,17 +115,15 @@ final class DoctrineDBALAdapterTest extends BaseStorageAdapterTest
     {
         $this->expectException(StorageInteractingFailed::class);
 
-        $adapter = new DoctrineDBALAdapter(
-            new StorageConfiguration('')
-        );
+        Loop::run(
+            static function (): \Generator
+            {
+                $adapter = new DoctrineDBALAdapter(
+                    new StorageConfiguration('')
+                );
 
-        wait(
-            call(
-                static function () use ($adapter): \Generator
-                {
-                    yield $adapter->execute('SELECT now()');
-                }
-            )
+                yield $adapter->execute('SELECT now()');
+            }
         );
     }
 }

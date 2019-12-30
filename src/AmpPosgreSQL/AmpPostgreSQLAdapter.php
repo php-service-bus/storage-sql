@@ -12,6 +12,10 @@ declare(strict_types = 1);
 
 namespace ServiceBus\Storage\Sql\AmpPosgreSQL;
 
+use Amp\Postgres\PgSqlCommandResult;
+use Amp\Postgres\PooledResultSet;
+use Amp\Postgres\PqCommandResult;
+use Amp\Sql\ResultSet as AmpResultSet;
 use function Amp\call;
 use function Amp\Postgres\pool;
 use Amp\Coroutine;
@@ -68,30 +72,27 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
      */
     public function execute(string $queryString, array $parameters = []): Promise
     {
-        $pool   = $this->pool();
-        $logger = $this->logger;
-
-        /** @psalm-suppress InvalidArgument */
         return call(
-        /** @psalm-return AmpPostgreSQLResultSet */
-            static function (string $queryString, array $parameters = []) use ($pool, $logger): \Generator
+            function () use ($queryString, $parameters) : \Generator
             {
                 try
                 {
-                    $logger->debug($queryString, $parameters);
+                    $this->logger->debug($queryString, $parameters);
 
-                    /** @psalm-suppress TooManyTemplateParams */
-                    return new AmpPostgreSQLResultSet(
-                        yield $pool->execute($queryString, $parameters)
-                    );
+                    /**
+                     * @psalm-suppress TooManyTemplateParams
+                     *
+                     * @var AmpResultSet|PgSqlCommandResult|PooledResultSet|PqCommandResult $resultSet
+                     */
+                    $resultSet = yield $this->pool()->execute($queryString, $parameters);
+
+                    return new AmpPostgreSQLResultSet($resultSet);
                 }
                 catch (\Throwable $throwable)
                 {
                     throw adaptAmpThrowable($throwable);
                 }
-            },
-            $queryString,
-            $parameters
+            }
         );
     }
 
@@ -100,22 +101,19 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
      */
     public function transactional(callable $function): Promise
     {
-        $pool   = $this->pool();
-        $logger = $this->logger;
-
         return call(
-            static function () use ($pool, $logger, $function): \Generator
+            function () use ($function): \Generator
             {
                 /**
                  * @psalm-suppress TooManyTemplateParams
                  *
                  * @var \Amp\Postgres\Transaction $originalTransaction
                  */
-                $originalTransaction = yield $pool->beginTransaction();
+                $originalTransaction = yield $this->pool()->beginTransaction();
 
-                $transaction = new AmpPostgreSQLTransaction($originalTransaction, $logger);
+                $transaction = new AmpPostgreSQLTransaction($originalTransaction, $this->logger);
 
-                $logger->debug('BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED');
+                $this->logger->debug('BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED');
 
                 try
                 {
@@ -146,24 +144,21 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
      */
     public function transaction(): Promise
     {
-        $pool   = $this->pool();
-        $logger = $this->logger;
-
         return call(
-            static function () use ($pool, $logger): \Generator
+            function (): \Generator
             {
                 try
                 {
-                    $logger->debug('BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED');
+                    $this->logger->debug('BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED');
 
                     /**
                      * @psalm-suppress TooManyTemplateParams
                      *
                      * @var \Amp\Postgres\Transaction $transaction
                      */
-                    $transaction = yield $pool->beginTransaction();
+                    $transaction = yield $this->pool()->beginTransaction();
 
-                    return new AmpPostgreSQLTransaction($transaction, $logger);
+                    return new AmpPostgreSQLTransaction($transaction, $this->logger);
                 }
                 // @codeCoverageIgnoreStart
                 catch (\Throwable $throwable)
