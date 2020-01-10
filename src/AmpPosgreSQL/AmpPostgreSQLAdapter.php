@@ -199,9 +199,9 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
                 new ConnectionConfig(
                     (string) $this->configuration->host,
                     $this->configuration->port ?? ConnectionConfig::DEFAULT_PORT,
-                    (string) $this->configuration->username,
-                    (string) $this->configuration->password,
-                    (string) $this->configuration->databaseName
+                    $this->configuration->username,
+                    $this->configuration->password,
+                    $this->configuration->databaseName
                 ),
                 $maxConnectionsCount,
                 $idleTimeout
