@@ -69,6 +69,8 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress MixedReturnTypeCoercion
      */
     public function execute(string $queryString, array $parameters = []): Promise
     {
@@ -98,6 +100,8 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress MixedReturnTypeCoercion
      */
     public function transactional(callable $function): Promise
     {
@@ -117,9 +121,13 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
 
                 try
                 {
-                    /** @var \Generator $generator */
+                    /** @var \Generator<null> $generator */
                     $generator = $function($transaction);
 
+                    /**
+                     * @psalm-suppress MixedArgumentTypeCoercion
+                     * @psalm-suppress InvalidArgument
+                     */
                     yield new Coroutine($generator);
 
                     /** @psalm-suppress TooManyTemplateParams */
@@ -141,6 +149,8 @@ final class AmpPostgreSQLAdapter implements DatabaseAdapter
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress MixedReturnTypeCoercion
      */
     public function transaction(): Promise
     {

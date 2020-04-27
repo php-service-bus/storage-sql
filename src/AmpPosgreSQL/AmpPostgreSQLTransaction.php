@@ -51,6 +51,8 @@ final class AmpPostgreSQLTransaction implements Transaction
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress MixedReturnTypeCoercion
      */
     public function execute(string $queryString, array $parameters = []): Promise
     {
@@ -82,6 +84,8 @@ final class AmpPostgreSQLTransaction implements Transaction
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress MixedReturnTypeCoercion
      */
     public function commit(): Promise
     {
@@ -111,6 +115,8 @@ final class AmpPostgreSQLTransaction implements Transaction
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress MixedReturnTypeCoercion
      */
     public function rollback(): Promise
     {

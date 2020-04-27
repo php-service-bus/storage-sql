@@ -49,6 +49,8 @@ final class DoctrineDBALAdapter implements DatabaseAdapter
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress MixedReturnTypeCoercion
      */
     public function execute(string $queryString, array $parameters = []): Promise
     {
@@ -82,6 +84,8 @@ final class DoctrineDBALAdapter implements DatabaseAdapter
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress MixedReturnTypeCoercion
      */
     public function transactional(callable $function): Promise
     {
@@ -93,7 +97,7 @@ final class DoctrineDBALAdapter implements DatabaseAdapter
 
                 try
                 {
-                    /** @var \Generator $generator */
+                    /** @var \Generator<null> $generator */
                     $generator = $function($transaction);
 
                     yield from $generator;
@@ -116,6 +120,8 @@ final class DoctrineDBALAdapter implements DatabaseAdapter
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress MixedReturnTypeCoercion
      */
     public function transaction(): Promise
     {

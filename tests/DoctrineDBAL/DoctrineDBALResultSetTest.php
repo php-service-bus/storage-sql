@@ -13,7 +13,6 @@ declare(strict_types = 1);
 namespace ServiceBus\Storage\Sql\Tests\DoctrineDBAL;
 
 use Amp\Loop;
-use function Amp\call;
 use function Amp\Promise\wait;
 use function ServiceBus\Storage\Sql\DoctrineDBAL\inMemoryAdapter;
 use function ServiceBus\Storage\Sql\fetchAll;

@@ -30,7 +30,9 @@ use ServiceBus\Storage\Common\ResultSet;
  * Collect iterator data
  * Not recommended for use on large amounts of data.
  *
- * Returns array<int, mixed>
+ * @psalm-suppress MixedReturnTypeCoercion
+ *
+ * @return Promise<array<int, mixed>>
  *
  * @throws \ServiceBus\Storage\Common\Exceptions\ResultSetIterationFailed
  */
@@ -54,7 +56,9 @@ function fetchAll(ResultSet $iterator): Promise
 /**
  * Extract 1 result.
  *
- * Returns array<string, mixed>|null
+ * @psalm-suppress MixedReturnTypeCoercion
+ *
+ * @return Promise<array<string, mixed>|null>
  *
  * @throws \ServiceBus\Storage\Common\Exceptions\ResultSetIterationFailed
  * @throws \ServiceBus\Storage\Common\Exceptions\OneResultExpected The result must contain only 1 row
@@ -88,6 +92,10 @@ function fetchOne(ResultSet $iterator): Promise
 
 /**
  * Returns the value of the specified sequence (string).
+ *
+ * @psalm-suppress MixedReturnTypeCoercion
+ *
+ * @return Promise<string>
  */
 function sequence(string $sequenceName, QueryExecutor $executor): Promise
 {
@@ -106,7 +114,7 @@ function sequence(string $sequenceName, QueryExecutor $executor): Promise
 
             unset($resultSet);
 
-            return $result['nextval'];
+            return (string) $result['nextval'];
         },
         $sequenceName
     );
@@ -115,13 +123,13 @@ function sequence(string $sequenceName, QueryExecutor $executor): Promise
 /**
  * Create & execute SELECT query.
  *
- * Returns \ServiceBus\Storage\Common\ResultSet
- *
  * @psalm-param    array<mixed, \Latitude\QueryBuilder\CriteriaInterface> $criteria
  * @psalm-param    array<string, string> $orderBy
  * @psalm-suppress MixedTypeCoercion
  *
  * @param \Latitude\QueryBuilder\CriteriaInterface[] $criteria
+ *
+ * @return Promise<\ServiceBus\Storage\Common\ResultSet>
  *
  * @throws \ServiceBus\Storage\Common\Exceptions\ConnectionFailed Could not connect to database
  * @throws \ServiceBus\Storage\Common\Exceptions\InvalidConfigurationOptions
@@ -152,12 +160,12 @@ function find(QueryExecutor $queryExecutor, string $tableName, array $criteria =
 /**
  * Create & execute DELETE query.
  *
- * Returns int
- *
  * @psalm-param    array<mixed, \Latitude\QueryBuilder\CriteriaInterface> $criteria
  * @psalm-suppress MixedTypeCoercion
  *
  * @param \Latitude\QueryBuilder\CriteriaInterface[] $criteria
+ *
+ * @return Promise<int>
  *
  * @throws \ServiceBus\Storage\Common\Exceptions\ConnectionFailed Could not connect to database
  * @throws \ServiceBus\Storage\Common\Exceptions\InvalidConfigurationOptions
@@ -385,7 +393,7 @@ function castObjectToArray(object $object): array
     /** @var float|int|object|string|null $value */
     foreach (getObjectVars($object) as $key => $value)
     {
-        $result[toSnakeCase($key)] = cast($key, $value);
+        $result[toSnakeCase($key)] = cast($value);
     }
 
     return $result;
@@ -447,26 +455,14 @@ function toSnakeCase(string $string): string
  *
  * @return float|int|string|null
  */
-function cast(string $key, $value)
+function cast($value)
 {
     if ($value === null || \is_scalar($value) === true)
     {
         return $value;
     }
 
-    /** @psalm-suppress RedundantConditionGivenDocblockType */
-    if (\is_object($value) === true)
-    {
-        return castObjectToString($value);
-    }
-
-    throw new IncorrectParameterCast(
-        \sprintf(
-            'The "%s" property must contain a scalar value. "%s" given',
-            $key,
-            \gettype($value)
-        )
-    );
+    return castObjectToString($value);
 }
 
 /**

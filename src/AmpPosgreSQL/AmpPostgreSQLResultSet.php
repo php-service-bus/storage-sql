@@ -103,6 +103,8 @@ class AmpPostgreSQLResultSet implements ResultSet
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress MixedReturnTypeCoercion
      */
     public function lastInsertId(?string $sequence = null): Promise
     {

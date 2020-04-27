@@ -182,7 +182,7 @@ final class QueryBuilderFunctionsTest extends TestCase
         $this->expectExceptionMessage('The "key" property must contain a scalar value. "array" given');
 
         /** @noinspection PhpParamsInspection */
-        cast('key', []);
+        cast([]);
     }
 
     /**
@@ -196,7 +196,6 @@ final class QueryBuilderFunctionsTest extends TestCase
         $this->expectExceptionMessage('"Closure" must implements "__toString" method');
 
         cast(
-            'key',
             static function (): void
             {
             }
@@ -218,7 +217,7 @@ final class QueryBuilderFunctionsTest extends TestCase
             }
         };
 
-        static::assertSame('qwerty', cast('key', $object));
+        static::assertSame('qwerty', cast($object));
     }
 
     /**

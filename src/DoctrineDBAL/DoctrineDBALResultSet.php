@@ -77,6 +77,8 @@ final class DoctrineDBALResultSet implements ResultSet
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress MixedReturnTypeCoercion
      */
     public function advance(): Promise
     {
@@ -124,6 +126,8 @@ final class DoctrineDBALResultSet implements ResultSet
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress MixedReturnTypeCoercion
      */
     public function lastInsertId(?string $sequence = null): Promise
     {

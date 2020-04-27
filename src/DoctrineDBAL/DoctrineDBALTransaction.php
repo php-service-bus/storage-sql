@@ -39,6 +39,8 @@ final class DoctrineDBALTransaction implements Transaction
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress MixedReturnTypeCoercion
      */
     public function execute(string $queryString, array $parameters = []): Promise
     {
@@ -71,13 +73,13 @@ final class DoctrineDBALTransaction implements Transaction
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress MixedReturnTypeCoercion
+     * @psalm-suppress InvalidReturnType
      */
     public function commit(): Promise
     {
-        /**
-         * @psalm-suppress InvalidArgument
-         * @psalm-suppress MixedTypeCoercion
-         */
+        /** @psalm-suppress InvalidReturnStatement */
         return call(
             function (): void
             {
@@ -99,13 +101,13 @@ final class DoctrineDBALTransaction implements Transaction
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress MixedReturnTypeCoercion
+     * @psalm-suppress InvalidReturnType
      */
     public function rollback(): Promise
     {
-        /**
-         * @psalm-suppress InvalidArgument
-         * @psalm-suppress MixedTypeCoercion
-         */
+        /** @psalm-suppress InvalidReturnStatement */
         return call(
             function (): void
             {
