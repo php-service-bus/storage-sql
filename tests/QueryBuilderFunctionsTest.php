@@ -176,20 +176,6 @@ final class QueryBuilderFunctionsTest extends TestCase
      *
      * @throws \Throwable
      */
-    public function castNonScalarType(): void
-    {
-        $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage('The "key" property must contain a scalar value. "array" given');
-
-        /** @noinspection PhpParamsInspection */
-        cast([]);
-    }
-
-    /**
-     * @test
-     *
-     * @throws \Throwable
-     */
     public function castObjectWithoutToString(): void
     {
         $this->expectException(\LogicException::class);
